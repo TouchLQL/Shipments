@@ -1,0 +1,41 @@
+﻿@{
+    ViewBag.Title = "Billing";
+    Layout = "~/Views/Shared/_BootstrapUI.cshtml";
+}
+
+<link href="~/Content/dataTable/dtConfig.css" rel="stylesheet" />
+<link href="~/Content/datetimePicker/datetimePicker.css" rel="stylesheet" />
+
+<div class="panel panel-default mb0">
+    <div class="panel-body bb panel_inquire">
+        <form id="form_inquire" role="form" class="form-inline">
+            <div class="form-group">
+                <div id="datetimepicker_st" class="input-group date">
+                    <input id="date_st" type="text" class="form-control" placeholder="StartTime" style="width:110px;">
+                    <span class="input-group-addon">
+                        <span class="fa fa-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div id="datetimepicker_ed" class="input-group date">
+                    <input id="date_ed" type="text" class="form-control" placeholder="EndTime" style="width:110px;">
+                    <span class="input-group-addon">
+                        <span class="fa fa-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <button id="btnInquire" type="button" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+    <div id="btnOp" class="panel-heading"></div>
+    <div class="panel-body bt panel-body-dt">
+        <div class="table-responsive">
+            <table id="dt_log" class="table table-striped nowrap"></table>
+        </div>
+    </div>
+</div>
+
+<script src="~/Content/datetimePicker/moment.js"></script>
+<script src="~/Content/datetimePicker/datetimePicker.js"></script>
+<script src="~/Pscripts/Business/Billing.js"></script>

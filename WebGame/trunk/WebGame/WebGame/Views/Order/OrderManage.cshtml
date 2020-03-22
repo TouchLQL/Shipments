@@ -1,0 +1,663 @@
+﻿@{
+    ViewBag.Title = "OrderManage";
+    Layout = "~/Views/Shared/_BootstrapUI.cshtml";
+}
+@using System.Data;
+<head>
+    <meta charset="utf-8" />
+    <meta name="renderer" content="webkit" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>订单管理</title>
+    <link rel="stylesheet" href="~/Content/layui/css/layui.css" />
+    <link href="~/Content/dataTable/dtConfig.css" rel="stylesheet" />
+    <link href="~/Content/datetimePicker/datetimePicker.css" rel="stylesheet" />
+    <style type="text/css">
+        /*您可以将下列样式写入自己的样式表中*/
+        .childBody {
+            padding: 15px;
+        }
+
+        /*layui 元素样式改写*/
+        .layui-btn-sm {
+            line-height: normal;
+            font-size: 12.5px;
+        }
+
+        .layui-table-view .layui-table-body {
+            min-height: 256px;
+        }
+
+        .layui-table-cell .layui-input.layui-unselect {
+            height: 30px;
+            line-height: 30px;
+        }
+
+        /*设置 layui 表格中单元格内容溢出可见样式*/
+        .table-overlay .layui-table-view,
+        .table-overlay .layui-table-box,
+        .table-overlay .layui-table-body {
+            overflow: visible;
+        }
+
+        .table-overlay .layui-table-cell {
+            height: auto;
+            overflow: visible;
+        }
+
+        /*文本对齐方式*/
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+<div class="panel panel-default mb0">
+    <div class="panel-body bb panel_inquire">
+        <form id="form_inquire" role="form" class="form-inline">
+            <div class="form-group">
+                <select id="s_customerId" name="s_customerId" class="selectpicker show-tick form-control" data-live-search="false">
+                    <option value=''>请选择</option>
+                    @{
+                        MultiColorPen.BLL.customer customerinfo = new MultiColorPen.BLL.customer();
+                        DataTable dt = customerinfo.GetList(" is_del=0 ").Tables[0];
+                        foreach (DataRow dr in dt.Rows)
+                        {
+                            <option value='@(dr["id"])'>@(dr["name"])</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <div id="datetimepicker_st" class="input-group date">
+                    <input id="date_st" type="text" class="form-control" placeholder="Begin Time" style="width:110px;">
+                    <span class="input-group-addon">
+                        <span class="fa fa-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div id="datetimepicker_ed" class="input-group date">
+                    <input id="date_ed" type="text" class="form-control" placeholder="End Time" style="width:110px;">
+                    <span class="input-group-addon">
+                        <span class="fa fa-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <button id="btnInquire" type="button" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+
+    @*<input type="hidden" id="btn_val" />*@
+    @*<div id="btnOp" class="panel-heading">
+        </div>*@
+    <div id="btnOp1" class="panel-heading">
+        <button id="1004" type="button" onclick="javascript: Btn_Add(this);" data-type="newCacheTable" class="btn btn-fcheck text-left layui-btn layui-btn-sm">
+            <i class="fa fa-plus">&nbsp;&nbsp;新增</i>
+        </button>&nbsp;&nbsp;
+        <button id="1002" type="button" onclick="javascript: Btn_Edit(this);" data-type="loadCacheFromDb" class="layui-btn layui-btn-sm">
+            <i class="fa fa-edit">&nbsp;&nbsp;编辑</i>
+        </button>&nbsp;&nbsp;
+        <button id="1003" type="button" onclick="javascript: Btn_Delete(this);" class="btn btn-danger text-left">
+            <i class="fa fa-trash-o">&nbsp;&nbsp;删除</i>
+        </button>&nbsp;&nbsp;
+        <button id="1003" type="button" onclick="javascript: Btn_PrintOne(this);" class="btn btn-pull text-left">
+            <i class="fa fa-trash-o">&nbsp;&nbsp;打印</i>
+        </button>&nbsp;&nbsp;
+        <button id="1003" type="button" onclick="javascript: Btn_PrintBaoBiao(this);" class="btn btn-pull text-left">
+            <i class="fa fa-trash-o">&nbsp;&nbsp;打印报表</i>
+        </button>&nbsp;&nbsp;
+    </div>
+
+    @*<div class="panel-body bt panel-body-dt-normal">
+            <div class="table-responsive">
+                <table id="dt_btn" class="table table-striped nowrap"></table>
+            </div>
+        </div>*@
+    <div class="panel-body bt panel-body-dt">
+        <div class="table-responsive">
+            <table id="dt_log" class="table table-striped nowrap"></table>
+        </div>
+    </div>
+</div>
+
+
+<div id="orderAddModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabelLarge" aria-hidden="true" class="modal fade">
+    <div class="modal-dialog" style="width:900px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 id="title" class="modal-title">新增订单</h4>
+            </div>
+            <div class="modal-body">
+                <section class="layui-col-md10" style="margin: 0 auto; float: none;">
+                    <div class="layui-card">
+                        <div class="layui-card-body layui-text">
+                            <div class="form-group" style="margin-bottom: 50px;">
+                                <label class="col-md-2 control-label" style="margin-top:7px;">选择商家</label>
+                                <div class="col-md-10">
+                                    <input type="text" id="orderId" value="-1" hidden />
+                                    <input type="text" id="orderNumber" value="-1" hidden />
+                                    <select id="customerId" name="customerId" required="required" class="selectpicker show-tick form-control" data-live-search="false">
+                                        <option value=''>请选择</option>
+                                        @{
+                                            foreach (DataRow dr in dt.Rows)
+                                            {
+                                                <option value='@(dr["id"])'>@(dr["name"])</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" style="margin-top:7px;">配送时间</label>
+                                <div id="date_delivery" class="input-group date col-md-10">
+                                    <input id="date_delivery_value" type="text" class="form-control" placeholder="" style="margin-left:15px;width:516px;">
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" style="margin-top:7px;">备注</label>
+                                <div id="" class="input-group date col-md-10">
+                                    <input id="order_mark" type="text" class="form-control" placeholder="">
+                                </div>
+                            </div>
+                            <div id="toolbar">
+                                <div style="float:left;">
+                                    <button type="button" class="layui-btn layui-btn-sm" data-type="addRow" title="添加一行">
+                                        <i class="layui-icon layui-icon-add-1"></i> 添加一行
+                                    </button>
+                                </div>
+                                <div style="margin-left:600px;">
+                                    <button type="button" class="layui-btn layui-btn-sm" data-type="clearEmptyTableCache" title="清空表单">
+                                        <i class="layui-icon layui-icon-delete"></i> 清空表单
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="tableRes" class="table-overlay layui-form">
+                                <table id="dataTable" lay-filter="dataTable" class="layui-hide"></table>
+                            </div>
+                            <div id="action" class="text-center">
+                                <button type="button" name="btnSave" class="layui-btn" data-type="save"><i class="layui-icon layui-icon-ok-circle"></i>保存</button>
+                                @*<button type="reset" name="btnReset" class="layui-btn layui-btn-primary">取消</button>*@
+                                <button id="cancelButton" type="button" data-dismiss="modal" class="layui-btn layui-btn-primary">取消</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--保存结果输出-->
+                    @*<div class="layui-card">
+                            <div class="layui-card-header">保存结果输出</div>
+                            <div class="layui-card-body layui-text">
+                                <blockquote class="layui-elem-quote layui-quote-nm">
+                                    <pre id="jsonResult"><span class="layui-word-aux">请点击“保存”后查看输出信息……</span></pre>
+                                </blockquote>
+                            </div>
+                        </div>*@
+                </section>
+            </div>
+            @*<div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-default">Exit</button>
+                    @*<button id="btnSave" type="button" class="btn btn-primary">Save</button>
+                    <button type="button" name="btnSave" class="btn btn-primary" data-type="save"><i class="layui-icon layui-icon-ok-circle"></i>保存</button>
+                </div>*@
+        </div>
+    </div>
+</div>
+
+<div class="modal fade">
+    <div id="printOrder" style="width:100%;">
+        <table id="printOrderTable" border="1" style="width:100%;font-size:20px;font-family:'宋体';">
+            <tr style="border-bottom: none;">
+                <th colspan="6">
+                    <p style="text-align:center;font-size:24px;font-family:'微软雅黑'">重庆品佳调味</p>
+                </th>
+            </tr>
+            <tr style="border-bottom: none;">
+                <th colspan="6">
+                    <p style="text-align:center;font-size:25px;">送货单</p>
+                </th>
+            </tr>
+            <tr style="height:20px;">
+                <th colspan="6"></th>
+            </tr>
+            <tr>
+                <th colspan="4" id="printCustomerName">购货单位:</th>
+
+                <th colspan="2" id="printTime">日期:</th>
+            </tr>
+            <tr>
+                <th style="text-align:center;width:20%;">品名</th>
+                <th style="text-align:center;width:10%;">数量</th>
+                <th style="text-align:center;width:10%;">单位</th>
+                <th style="text-align:center;width:20%;">单价</th>
+                <th style="text-align:center;width:20%;">金额</th>
+                <th style="text-align:center;width:20%;">备注</th>
+            </tr>
+            @*<tr id="orderInfoPrint">
+
+                </tr>*@
+            <tr>
+                <th colspan="4"> <p style="float:left;">合计金额： </p>  <p style="margin-left:25px;float:left;">万</p> <p style="margin-left:25px;float:left;">仟</p> <p style="margin-left:25px;float:left;">佰</p> <p style="margin-left:25px;float:left;">拾</p> <p style="margin-left:25px;float:left;">元</p> <p style="margin-left:25px;float:left;">角</p> <p style="margin-left:25px;float:left;">分</p></th>
+                <th colspan="2" id="totalAcount">¥：</th>
+            </tr>
+        </table>
+        <div style="font-size:18px;font-family:'宋体';margin-top:10px;">
+            <div><p>地址：重庆学田湾农贸市场农创超市1楼</p> </div>
+            <div><p style="float:left;">电话：023-63740959</p><p style="margin-left:200px;">023-63656727</p> </div>
+            <div><p style="float:left;">电话：13650563542</p><p style="margin-left:200px;">13883349986</p> </div>
+            <div><p>联系人：胡晓英  胡小兰</p> </div>
+        </div>
+    </div>
+</div>
+
+<div class="">
+    <div id="printBaoBiao">
+        <table id="printBaoBiaoTable" border="1" style="width:100%;font-size:20px;font-family:'宋体';">
+            <tbody id="printBaoBiaoBody">
+                <tr style="border-bottom: none;">
+                    <th colspan="4">
+                        <p style="text-align:center;font-size:24px;font-family:'微软雅黑'">重庆品佳调味</p>
+                    </th>
+                </tr>
+                <tr style="height:20px;">
+                    <th colspan="4"></th>
+                </tr>
+                <tr>
+                    <th colspan="4" id="printCustomerNameBaoBiao">购货单位:</th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+@*//2.2.4版本jq*@
+<script src="~/Scripts/jquery.js"></script>
+<script src="~/Scripts/bootstrap.js"></script>
+<script src="~/Content/datetimePicker/moment.js"></script>
+<script src="~/Content/datetimePicker/datetimePicker.js"></script>
+@*//1.4版本jq,新旧版本的jq顺序不可交换*@
+<script src="~/Scripts/jquery-1.4.4.min.js"></script>
+<script src="~/Scripts/bootstrap.js"></script>
+<script src="~/Content/jq-print/jquery.jqprint-0.3.js"></script>
+@*<script src="~/Content/jq-print/jquery-migrate-1.2.1.min.js"></script>*@
+<script src="~/Pscripts/Order/Order.js"></script>
+<!--recommended script position-->
+<script src="~/Content/layui/layui.js" charset="utf-8"></script>
+<script type="text/javascript">
+
+    // 现在window.$和window.jQuery是1.11版本:
+    // console.log($().jquery); // => '2.2.4'
+    var $q = $.noConflict(); //将$2设置为1.4版本的jq,设置完之后$又变回了2.2.4
+    console.log($.fn.jquery); // => '2.2.4'
+    console.log($q.fn.jquery); // => '1.4'
+    //var _$ = $.noConflict(true);
+    // 现在window.$和window.jQuery被恢复成1.7版本，只有__才代表1.11版本
+    //console.log($().jquery); // => '1.4.4'
+    // 可以通过 __ 访问1.11版本的jQuery了
+
+
+    var commodityList = [];
+    var commodityList2 = [];
+    var commoditynames;
+    // var priceUpdate;//价格全局变量
+    $.ajax({
+        url: "/Commodity/GetCommodityList",
+        async: false,
+        success: function (result) {
+            result = eval('(' + result + ')');
+            if (result.IsSucceed) {
+                commodityList = eval(result.Entity);
+                var datas = "";
+                for (var i = 0; i < commodityList.length; i++) {
+                    datas = datas + '{"id":' + commodityList[i].id + ',"name":"' + commodityList[i].special_ame + '"},';
+                }
+                commoditynames = JSON.parse("[" + datas.substring(0, datas.length - 1) + "]");
+            }
+        }
+    });
+
+    //准备视图对象
+    //window.onload=function () {
+    window.viewObj = {
+        tbData: [{
+            tempId: new Date().valueOf(),
+            name: "1",
+            price: "2.7",
+            singleTotalPrice: "20.7",
+            mark: "",
+            count: 9
+        }],
+        typeData: commoditynames,
+        renderSelectOptions: function (data, settings) {
+            settings = settings || {};
+            var valueField = settings.valueField || 'value',
+                textField = settings.textField || 'text',
+                selectedValue = settings.selectedValue || "";
+            var html = [];
+            for (var i = 0, item; i < data.length; i++) {
+                item = data[i];
+                html.push('<option value="');
+                html.push(item[valueField]);
+                html.push('"');
+                if (selectedValue && item[valueField] == selectedValue) {
+                    html.push(' selected="selected"');
+                }
+                html.push('>');
+                html.push(item[textField]);
+                html.push('</option>');
+            }
+            return html.join('');
+        }
+    };
+
+    //layui 模块化引用
+    layui.use(['jquery', 'table', 'layer'], function () {
+        var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer;
+        //var  table = layui.table, form = layui.form, layer = layui.layer;
+        //数据表格实例化
+        var tbWidth = $("#tableRes").width();
+        var layTableId = "layTable";
+        var tableIns = table.render({
+            elem: '#dataTable',
+            id: layTableId,
+            data: [],
+            width: tbWidth,
+            page: true,
+            loading: true,
+            even: false, //不开启隔行背景
+            cols: [[
+                { title: '序号', type: 'numbers', width: 49 },
+                {
+                    field: 'name', title: '商品名', width: 250, templet: function (d) {
+                        var options = viewObj.renderSelectOptions(viewObj.typeData, { valueField: "id", textField: "name", selectedValue: d.name });
+                        return '<a lay-event="name"></a><select name="name" lay-filter="name" lay-search><option value="">请选择分类</option>' + options + '</select>';
+                    }
+                },
+                { field: 'price', name: 'price', event: 'price', title: '单价', edit: 'text', width: 50 },
+                //{
+                //    field: 'price', title: '价格', width: 100, templet: function (d) {
+                //        //var options = viewObj.renderSelectOptions(viewObj.typeData, { valueField: "id", textField: "name", selectedValue: d.name });
+                //        return '<div data-edit="text"><div lay-event="price" name="price" ></div></div>';
+                //    }
+                //},
+                //{
+                //    field: 'price', title: '价格', event: 'price', templet: function (d) {
+                //        var html = ['<input type="checkbox" name="state" lay-skin="switch" lay-text="是|否"'];
+                //        html.push(d.state > 0 ? ' checked' : '');
+                //        html.push('/>');
+                //        return html.join('');
+                //    }
+                //},
+                { field: 'count', title: '数量', edit: 'text', event: 'count', width: 40 },
+                //{
+                //    field: 'count', title: '数量', event:'count' , templet: function (d) {
+                //        var html = ['<input type="text" name="count"'];
+                //        html.push('/>');
+                //        return html.join('');
+                //    }
+                //},
+                { field: 'singleTotalPrice', title: '总价', edit: 'text', width: 80 },
+                { field: 'mark', title: '备注', edit: 'text', width: 130 },
+                {
+                    field: 'tempId', title: '操作', templet: function (d) {
+                        return '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del" lay-id="' + d.tempId + '"><i class="layui-icon layui-icon-delete"></i>移除</a>';
+                    }, width: 88
+                }
+            ]],
+            done: function (res, curr, count) {
+                viewObj.tbData = res.data;
+            }
+        });
+
+        //定义事件集合
+        var active = {
+            addRow: function () {	//添加一行
+                var oldData = table.cache[layTableId];
+                var newRow = { tempId: new Date().valueOf(), name: null, price: '', count: '' };
+                oldData.push(newRow);
+                tableIns.reload({
+                    data: oldData
+                });
+            },
+            updateRow: function (obj) {
+                var oldData = table.cache[layTableId];
+                for (var i = 0, row; i < oldData.length; i++) {
+                    row = oldData[i];
+                    if (row.tempId == obj.tempId) {
+                        $.extend(oldData[i], obj);
+                        return;
+                    }
+                }
+                tableIns.reload({
+                    data: oldData
+                });
+            },
+            removeEmptyTableCache: function () {
+                var oldData = table.cache[layTableId];
+                for (var i = 0, row; i < oldData.length; i++) {
+                    row = oldData[i];
+                    if (!row || !row.tempId) {
+                        oldData.splice(i, 1);    //删除一项
+                    }
+                    continue;
+                }
+                tableIns.reload({
+                    data: oldData
+                });
+            },
+            clearEmptyTableCache: function () {
+                layer.confirm('真的清空表单吗？', function (index) {
+                    var oldData = [];
+                    table.cache[layTableId] = [];
+                    tableIns.reload({
+                        data: oldData
+                    });
+                    layer.close(index);
+                });
+            },
+            //新增订单时，清空tablecache
+            newCacheTable: function () {
+                tableIns.reload({
+                    data: []
+                });
+            },
+            //编辑时加载cache数据
+            loadCacheFromDb: function () {  //按钮的class必须带layui-btn 才能调用data-type的事件事件函数
+                var newData = [];
+                var singlePrice;
+                //var seletedItem = tableOut.rows('.selected').data()[0];
+                console.log("$ edit", $.fn.jquery);
+                $.ajax({
+                    type: "get",
+                    contentType: "application/json;utf-8",
+                    url: "/Order/GetOrderDetailByWhere?t=" + new Date().getTime() + "&where= is_del=0 and order_number='" + $('#orderNumber').val() + "'",
+                    success: function (result) {
+                        result = eval('(' + result + ')');
+                        result = eval(result);
+                        table.cache[layTableId] = []; //清空tablecache
+                        var newRow;
+                        for (var i = 0; i < result.ds.length; i++) {
+                            singlePrice = (result.ds[i].commodity_price * result.ds[i].commodity_count).toFixed(2);
+                            newRow = { tempId: result.ds[i].id, name: result.ds[i].commodity_id, price: result.ds[i].commodity_price, count: result.ds[i].commodity_count, singleTotalPrice: singlePrice, mark: result.ds[i].mark };
+                            newData.push(newRow);
+                        }
+                        tableIns.reload({
+                            data: newData
+                        });
+
+                    }
+                });
+            },
+            //保存到数据库
+            save: function () {
+                console.log("save jq v" + $.fn.jquery);
+                
+               // $('#orderAddModal').modal('hide');
+                var oldData = table.cache[layTableId];
+                for (var i = 0, row; i < oldData.length; i++) {
+                    row = oldData[i];
+                    if (!row.name) {
+                        layer.msg("检查每一行，请选商品名称！", { icon: 5 }); //提示
+                        return;
+                    }
+                    if (!row.count) {
+                        layer.msg("检查每一行，请填写数量！", { icon: 5 }); //提示
+                        return;
+                    }
+                }
+                var customerInfo = document.getElementById("customerId");
+                var index = customerInfo.selectedIndex;
+                var customerId = customerInfo.options[index].value; //获取商家id
+                var orderInfo = Object();
+                orderInfo.customerId = customerId;
+                orderInfo.orderId = $("#orderId").val();
+                orderInfo.deliverTime = $("#date_delivery_value").val();
+                orderInfo.orderMark = $("#order_mark").val();
+                console.log("sainfo json v" + $.fn.jquery);
+                console.log("sainfo json v1" + $q.fn.jquery);
+                console.log("sainfo json v2" + $z.fn.jquery);
+
+                //console.log("sainfo json v2" + $q.fn.jquery);
+                $.ajax({
+                    type: "post",
+                    contentType: "application/json;utf-8",
+                    url: "/Order/SaveOrder?t=" + new Date().getTime(),
+                    //data: "{json:'" + $.toJSON(table.cache[layTableId]) + "',orderInfo:" + $.toJSON("[" + JSON.stringify(orderInfo) + "]") + "}",
+                    data: "{json:'" + JSON.stringify(table.cache[layTableId]) + "',orderInfo:" + JSON.stringify("[" + JSON.stringify(orderInfo) + "]") + "}",
+                    success: function (result) {
+                        $("#cancelButton").click();
+                        result = eval('(' + result + ')');
+                        console.log("baocun ajax：" + $.fn.jquery);
+                        if (result.IsSucceed) {
+                            alert("添加成功！");
+                            //$('#orderAddModal').modal('hide');
+                            //loadTableData();
+                        }
+                        else {
+                            if (result.Entity != "" && result.Entity != null)
+                                window.parent.location.href = result.Entity;
+                        }
+                        //$('#orderAddModal').modal('hide');
+                        //$.notify({
+                        //    message: '<i class="fa fa-check"></i> ' + result.Message,
+                        //    status: "success",
+                        //    pos: "bottom-right"
+                        //});
+                        loadTableData();
+                    }
+                });
+                // document.getElementById("jsonResult").innerHTML = JSON.stringify(table.cache[layTableId], null, 2);	//使用JSON.stringify() 格式化输出JSON字符串
+            }
+        }
+
+        //激活事件
+        var activeByType = function (type, arg) {
+            if (arguments.length === 2) {
+                active[type] ? active[type].call(this, arg) : '';
+            } else {
+                active[type] ? active[type].call(this) : '';
+            }
+        }
+
+        //注册按钮事件
+        $('.layui-btn[data-type]').on('click', function () {
+            var type = $(this).data('type');
+            activeByType(type);
+        });
+
+        $('.layui-btn[data-type]').on('input', function () {
+            var type = $(this).data('count');
+            activeByType(type);
+        });
+
+        //监听select下拉选中事件
+        form.on('select(name)', function (data) {
+            var elem = data.elem; //得到select原始DOM对象
+            //var elemParentAllChild = elem.parentNode.parentNode.parentNode.childNodes;//获取当前行的所有td
+            $(elem).prev("a[lay-event='name']").trigger("click");
+
+            //取出
+            //var commoditySingle = "";
+            //$.ajax({
+            //    url: "/Commodity/SingleCommodity/"+data.value,
+            //    async: true,
+            //    success: function (result) {
+            //        commoditySingle = eval('(' + result + ')');
+            //        elemParentAllChild[2].childNodes[0].innerHTML = commoditySingle.price;//设置价格
+            //        //priceUpdate =  commoditySingle.price; //给全局变量价格赋值
+            //    }
+            //});
+        });
+
+        //监听工具条
+        table.on('tool(dataTable)', function (obj) {
+            var data = obj.data, event = obj.event, tr = obj.tr; //获得当前行 tr 的DOM对象;
+            //console.log(data);
+            var select2; //获取td对象
+            switch (event) {
+                case "name":
+                    //console.log(data);
+                    var select = tr.find("select[name='name']");
+                    if (select) {
+                        var selectedVal = select.val();
+                        if (!selectedVal) {
+                            layer.tips("请选择商品", select.next('.layui-form-select'), { tips: [3, '#FF5722'] }); //吸附提示
+                        }
+                        $.extend(obj.data, { 'name': selectedVal });
+                        activeByType('updateRow', obj.data);	//更新商品名行记录对象
+                        //更新table的cahe,如果不将自动添加出来的价格更新到table的cache,那么新增行的时候无法从cache中取出价格放上去
+                        var commoditySingle2 = "";
+                        $.ajax({
+                            url: "/Commodity/SingleCommodity/" + selectedVal,
+                            async: false,
+                            success: function (result) {
+                                commoditySingle2 = eval('(' + result + ')');
+                                $.extend(obj.data, { 'price': commoditySingle2.price });
+                                activeByType('updateRow', obj.data);	//更新价格行记录对象到cache
+                                select2 = tr.find("td");//tr中的td对象集合
+                                select2[2].childNodes[0].innerHTML = commoditySingle2.price;//将获取到的价格更新到现有的表格上展示
+                            }
+                        });
+                    }
+                    break;
+                case "count":
+                    var stateVal = tr.find("input[name='price']");
+                    select2 = tr.find("td");// tr中的td对象集合
+                    select2[4].childNodes[0].innerHTML = (select2[2].childNodes[0].innerHTML * select2[3].childNodes[0].innerHTML).toFixed(2);//将单价乘以数量得到单行总价
+                    $.extend(obj.data, { 'singleTotalPrice': select2[4].childNodes[0].innerHTML })
+                    activeByType('updateRow', obj.data);	//更新行记录对象
+                    break;
+                case "state":
+                    var stateVal = tr.find("input[name='state']").prop('checked') ? 1 : 0;
+                    $.extend(obj.data, { 'state': stateVal })
+                    activeByType('updateRow', obj.data);	//更新行记录对象
+                    break;
+                case "del":
+                    layer.confirm('真的删除行么？', function (index) {
+                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                        layer.close(index);
+                        activeByType('removeEmptyTableCache');
+                    });
+                    break;
+                case "clearTable":
+                    layer.confirm('真的清空表单吗？', function (index) {
+                        //obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                        layer.close(index);
+                        activeByType('clearEmptyTableCache');
+                    });
+                    break;
+                case "loadCacheFromDb":
+                    activeByType('loadTableCacheFromDb');
+                    break;
+            }
+        });
+    });
+           // }
+</script>

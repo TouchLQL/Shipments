@@ -1,0 +1,68 @@
+﻿@{
+    ViewBag.Title = "PrizesManage";
+    Layout = "~/Views/Shared/_BootstrapUI.cshtml";
+}
+<link href="~/Content/dataTable/dtConfig.css" rel="stylesheet" />
+<link href="~/Content/datetimePicker/datetimePicker.css" rel="stylesheet" />
+
+<script src="~/Content/jquery.form.js"></script>
+<link href="~/Content/File/css/fileinput.min.css" rel="stylesheet" />
+<script src="~/Content/File/js/plugins/sortable.js"></script>
+<script src="~/Content/File/js/fileinput.js"></script>
+<script src="~/Content/File/js/locales/fr.js"></script>
+<script src="~/Content/File/js/locales/es.js"></script>
+
+<div class="panel panel-default mb0">
+    <input type="hidden" id="btn_val" />
+    <div id="btnOp" class="panel-heading">
+    </div>
+    <div class="panel-body bt panel-body-dt-normal">
+        <div class="table-responsive">
+            <table id="dt_btn" class="table table-striped nowrap"></table>
+        </div>
+    </div>
+</div>
+
+<div id="btnAddModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabelLarge" aria-hidden="true" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 id="title" class="modal-title">AddPrizes</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" id="mm" method="post" class="form-horizontal" enctype="multipart/form-data" data-parsley-validate="" novalidate="">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">PrizeName</label>
+                        <div class="col-md-10">
+                            <input id="id" name="id" type="hidden" value="-1" />
+                            <input id="prizesname" name="prizesname" type="text" maxlength="10" placeholder="PrizeName" class="form-control" required="required" data-parsley-error-message="input prize name please..." />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">PrizePicture</label>
+                        <div class="col-md-10">
+                            <input id="imgpath" name="imgpath" type="file" multiple>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Score</label>
+                        <div class="col-md-10">
+                            <input id="score" name="score" type="text" maxlength="10" placeholder="Score" class="form-control" required="required" data-parsley-error-message="input score please..."   />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-default">Close</button>
+                <button id="btnSave" type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Content/datetimePicker/moment.js"></script>
+<script src="~/Content/datetimePicker/datetimePicker.js"></script>
+<script src="~/Pscripts/Business/Prizes.js"></script>

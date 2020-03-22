@@ -1,0 +1,58 @@
+﻿body {
+    background: #f7fafc;
+}
+
+.vcode {
+    height: 31px;
+    margin-top: 2px;
+}
+
+@media only screen and (min-height: 879px) {
+    .abs-center {
+        top: -30px;
+    }
+}
+
+@media only screen and (max-height: 879px) {
+    .abs-center {
+        top: 100px;
+        min-height: 50%;
+        height: auto;
+    }
+}
+
+.panel-heading h4 {
+    letter-spacing: 4px;
+}
+
+.panel-body p {
+    letter-spacing: 2px;
+}
+
+.info-bottom {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+#particles {
+    position: absolute;
+    top: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+    #particles canvas {
+        display: block;
+    }
+
+.ime {
+    -ms-ime-mode: disabled;
+    ime-mode: disabled;
+}
+
+.vcode-wrapper {
+    width: 212.75px;
+}

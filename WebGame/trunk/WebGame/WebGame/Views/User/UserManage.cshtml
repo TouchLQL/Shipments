@@ -1,0 +1,150 @@
+﻿@{
+    ViewBag.Title = "UserManage";
+    Layout = "~/Views/Shared/_BootstrapUI.cshtml";
+}
+
+
+<div class="row mr0">
+    <div class="col-md-5">
+        <div class="panel panel-default">
+            <div class="panel-heading text-right">
+                <div class="panel-title pull-left mt-sm">入库单</div>
+                <div id="btnOp"></div>
+
+            </div>
+            <div class="panel-body bt">
+                <div class="table-responsive">
+                    <table id="dt_inproductorder" class="table table-striped nowrap">
+                        <tfoot>
+                            <tr>
+                                <th colspan="2">合计金额:</th>
+                                <th></th>
+                                <th colspan="3"></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7 p0 pr-sm">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">商品信息</div>
+            </div>
+            <div class="panel-body bt">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">商品名称</label>
+                        <div class="col-md-10">
+                            <input type="hidden" value="-1" />
+                            <select id="productcode" name="productcode" required="required" class="selectpicker show-tick form-control" data-live-search="true">
+                                <option value="" productname="" productunit="" specification="" inventory="" costprice="costprice" producttypename="" wasehousename="">请选择商品名称</option>
+                                @{
+                                    var _db = new bunshopEntities();
+                                    var productType = _db.tb_producttypeinfo.Where(s => s.isenable == 1);
+                                    foreach (var ptype in productType)
+                                    {
+                                        var products = _db.tb_productinfo.Where(s => s.producttypecode == ptype.producttypecode);
+                                        if (!products.Any()) { continue; }
+                                        <optgroup label="@ptype.producttypename">
+                                            @foreach (var product in products)
+                                            {
+                                                var wasehouse = _db.tb_warehouseproduct.Join(_db.tb_warehouseinfo, a => a.warehousecode, b => b.warehousecode, (a, b) => new { a, b }).First(s => s.a.productcode == product.productcode).b;
+                                                <option value="@product.productcode" productname="@product.productname" productunit="@product.productunit" specification="@(product.specification??"")" inventory="@product.inventory"
+                                                        costprice="@product.costprice" producttypename="@ptype.producttypename" wasehousename="@wasehouse.warehousename">
+                                                    @(product.productname + " " + product.productunit + " " + product.specification)
+                                                </option>
+                                            }
+                                        </optgroup>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <label class="col-md-4 control-label">商品类别</label>
+                            <div class="col-md-8">
+                                <input id="producttypename" type="text" placeholder="商品类别" class="form-control" disabled />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="col-md-4 control-label">商品单位</label>
+                            <div class="col-md-8">
+                                <input id="productunit" type="text" placeholder="商品单位" class="form-control" disabled />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <label class="col-md-4 control-label">商品规格</label>
+                            <div class="col-md-8">
+                                <input id="specification" type="text" placeholder="商品规格" class="form-control" disabled />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="col-md-4 control-label">商品进价</label>
+                            <div class="col-md-8">
+                                <input id="costprice" type="text" placeholder="商品进价" class="form-control" disabled />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <label class="col-md-4 control-label">所在仓库</label>
+                            <div class="col-md-8">
+                                <input id="wasehousename" type="text" placeholder="所在仓库" class="form-control" disabled />
+                            </div>
+                        </div><div class="col-md-6">
+                            <label class="col-md-4 control-label">现库存量</label>
+                            <div class="col-md-8">
+                                <input id="inventory" type="text" placeholder="现库存量" class="form-control" disabled />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <label class="col-md-4 control-label">入库数量</label>
+                            <div class="col-md-8">
+                                <input id="incount" type="text" placeholder="入库数量" required="required" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="col-md-4 control-label">本次进价</label>
+                            <div class="col-md-8">
+                                <input id="incostprice" type="text" placeholder="本次进价" required="required" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <label class="col-md-4 control-label">供货商</label>
+                            <div class="col-md-8">
+                                <input id="insupplier" type="text" placeholder="供货商" required="required" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="col-md-4 control-label">本次金额</label>
+                            <div class="col-md-8">
+                                <input id="inmoney" type="text" placeholder="本次金额" disabled class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">备注</label>
+                        <div class="col-md-10">
+                            <input id="remark" type="text" placeholder="备注" class="form-control" />
+                        </div>
+                    </div>
+                    <label class="pl-xl control-label text-danger">&nbsp;&nbsp;本次进价：黄色表示比原进货价高，绿色表示比原进货价低，请注意修改商品售价！</label>
+
+                </form>
+            </div>
+            <div class="panel-footer text-right">
+                <button id="btnReset" type="button" class="btn btn-default"><i class="fa fa-refresh">&nbsp;&nbsp;重置</i></button>
+                <button id="btnInput" type="button" class="btn btn-primary"><i class="fa fa-save">&nbsp;&nbsp;确认</i></button>
+            </div>
+        </div>
+    </div>
+</div>

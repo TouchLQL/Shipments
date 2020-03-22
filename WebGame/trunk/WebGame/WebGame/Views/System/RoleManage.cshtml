@@ -1,0 +1,184 @@
+﻿@{
+    ViewBag.Title = "Role management";
+    Layout = "~/Views/Shared/_BootstrapUI.cshtml";
+}
+<link href="~/Content/bootstrap-treeview-master/dist/bootstrap-treeview.min.css" rel="stylesheet" />
+<style type="text/css">
+    .tree {
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
+        /*min-height: 20px;
+            padding: 19px;
+            margin-bottom: 20px;
+            background-color: #fbfbfb;
+            border: 1px solid #999;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+            -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);*/
+    }
+
+        .tree li {
+            list-style-type: none;
+            margin: 0;
+            padding: 10px 5px 0 5px;
+            position: relative;
+        }
+
+            .tree li::before, .tree li::after {
+                content: '';
+                left: -20px;
+                position: absolute;
+                right: auto;
+            }
+
+            .tree li::before {
+                border-left: 1px solid #999;
+                bottom: 50px;
+                height: 100%;
+                top: 0;
+                width: 1px;
+            }
+
+            .tree li::after {
+                border-top: 1px solid #999;
+                height: 20px;
+                top: 25px;
+                width: 25px;
+            }
+
+            .tree li span {
+                -moz-border-radius: 5px;
+                -webkit-border-radius: 5px;
+                border: 1px solid #999;
+                border-radius: 5px;
+                display: inline-block;
+                padding: 3px 8px;
+                text-decoration: none;
+            }
+            /*.tree li.parent_li > span { cursor: pointer; }*/
+            .tree li > span {
+                cursor: pointer;
+            }
+
+        .tree > ul > li::before, .tree > ul > li::after {
+            border: 0;
+        }
+
+        .tree li:last-child::before {
+            height: 30px;
+        }
+
+        .tree li.parent_li > span:hover, .tree li.parent_li > span:hover + ul li span {
+            background: #eee;
+            border: 1px solid #94a0b4;
+            color: #000;
+        }
+
+    .tc_color {
+        background: #d9cfcf;
+    }
+</style>
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-md-3">
+            <!-- START panel-->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="pull-right">
+                        <a href="#" id="Btn_Add" class="btn btn-xs btn-primary">Added</a>
+                        <a href="#" id="Btn_Edit" class="btn btn-xs btn-primary">Edit</a>
+                        <a href="#" id="Btn_Delete" class="btn btn-xs btn-primary">Delete</a>
+                    </div>
+                    <div class="panel-title">Role management</div>
+                </div>
+                <div class="panel-body bt">
+                    <div class="tree" id="role_tree">
+                        <ul>
+                            <li>
+                                <input id="tree_id" type="hidden" />
+                                <span id="-1"><i class="icon-people"></i> System role</span>
+                                @{
+                                    var dt = new MultiColorPen.BLL.sys_roleinfo().GetList("isenable='1' order by rolesort asc").Tables[0];
+                                    for (int i = 0; i < dt.Rows.Count; i++)
+                                    {
+                                        <ul>
+                                            <li>
+                                                <span id="T_@(dt.Rows[i]["rolecode"].ToString())" title="@dt.Rows[i]["rolename"].ToString()">@dt.Rows[i]["rolename"].ToString()</span>
+                                            </li>
+                                        </ul>
+                                    }
+                                }
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- END panel-->
+        </div>
+        <div class="col-md-9">
+            <!-- START panel-->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="pull-right">
+                        <a href="#" id="Btn_Save" class="btn btn-xs btn-primary">Save</a>
+                        <input type="hidden" id="mpcode" />
+                    </div>
+                    <div class="panel-title">Permission settings</div>
+                </div>
+                <div class="panel-body bt">
+                    <div class="tree" id="power_tree">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="roleAddModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabelLarge" aria-hidden="true" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 id="title" class="modal-title">Role added</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal" data-parsley-validate="" novalidate="">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">  Role Name</label>
+                        <div class="col-md-10">
+                            <input id="id" type="hidden" value="-1" />
+                            <input id="rolename" type="text" maxlength="10" placeholder="Role Name" class="form-control" required="required" data-parsley-error-message="Please enter a role name..." />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Role sorting</label>
+                        <div class="col-md-10">
+                            <input id="rolesort" type="number" placeholder="Role sorting" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Remarks</label>
+                        <div class="col-md-10">
+                            <textarea id="remark" maxlength="200" placeholder="Remarks" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-default">Exit</button>
+                <button id="btnSave" type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Content/bootstrap-treeview-master/dist/bootstrap-treeview.min.js"></script>
+<script src="~/Pscripts/System/RoleManage.js?v=1"></script>

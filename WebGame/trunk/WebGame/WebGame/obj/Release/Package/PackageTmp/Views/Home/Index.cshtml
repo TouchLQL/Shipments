@@ -1,0 +1,463 @@
+﻿@{
+    Layout = null;
+}
+@using MultiColorPen.BLL;
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>重庆品佳调味</title>
+    <link href="~/Content/font-awesome-4.6.3/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/app/simpleLineIcons.css" rel="stylesheet" />
+    <link href="~/Content/app/animatecss.css" rel="stylesheet" />
+    <link href="~/Content/app/whirl.css" rel="stylesheet" />
+    <link href="~/Content/app/bootstrap.css" rel="stylesheet" id="bscss" />
+    <link href="~/Content/app/app.css" rel="stylesheet" id="maincss" />
+    <style>
+        .content-wrapper {
+            height: 100%;
+            padding: 0;
+        }
+
+        .menuItem em {
+            margin-left: 0 !important;
+        }
+
+        #tablist li a {
+            padding: 10px 15px;
+            border-left: 0;
+            font-weight: 500;
+        }
+
+        .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+            color: #23b7e5;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .page-refresh {
+            color: #ddd;
+        }
+
+            .page-refresh:hover {
+                color: #909FA7;
+                cursor: pointer;
+            }
+
+        .menu-close {
+            position: relative;
+            right: -10px;
+            color: #ddd;
+        }
+
+            .menu-close:hover {
+                color: #F05050;
+                cursor: pointer;
+            }
+
+        .tab-content {
+            height: calc(100% - 64px);
+            margin: 10px;
+            border-width: 0 !important;
+        }
+
+        #tabcontent .tab-pane {
+            height: 100%;
+        }
+
+        .wrapper {
+            height: 100%;
+        }
+
+            .wrapper > section {
+                height: calc(100% - 95px);
+            }
+
+        .ime {
+            -ms-ime-mode: disabled;
+            ime-mode: disabled;
+        }
+    </style>
+</head>
+<body id="translation">
+    <script src="~/Content/translater.min.js"></script>
+    <script type="text/javascript">
+        var tran = new Translater({
+            lang: "en"
+        });
+    </script>
+
+    <div class="wrapper">
+        <!-- top navbar-->
+        <header class="topnavbar-wrapper">
+            <!-- START Top Navbar-->
+            <nav class="navbar topnavbar">
+                <!-- START navbar header-->
+                <div class="navbar-header">
+                    <a href="#/" class="navbar-brand">
+                        <div class="brand-logo">
+                            <img src="~/Content/images/logoandfonr.png" alt="App Logo" class="img-responsive" />
+                        </div>
+                        <div class="brand-logo-collapsed">
+                            <img src="~/Content/images/logo-single.png" alt="App Logo" class="img-responsive" />
+                        </div>
+                    </a>
+                </div>
+                <!-- END navbar header-->
+                <!-- START Nav wrapper-->
+                <div class="nav-wrapper">
+                    <!-- START Left navbar-->
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <!-- Button used to collapse the left sidebar. Only visible on tablet and desktops-->
+                            <a href="#" data-trigger-resize="" data-toggle-state="aside-collapsed" class="hidden-xs" title="Menu bar unfolds / folds">
+                                <em class="fa fa-navicon"></em>
+                            </a>
+                            <!-- Button to show/hide the sidebar on mobile. Visible on mobile only.-->
+                            <a href="#" data-toggle-state="aside-toggled" data-no-persist="true" class="visible-xs sidebar-toggle">
+                                <em class="fa fa-navicon"></em>
+                            </a>
+                        </li>
+                        <!-- START User avatar toggle-->
+                        <li>
+                            <!-- Button used to collapse the left sidebar. Only visible on tablet and desktops-->
+                            <a id="user-block-toggle" href="#user-block" data-toggle="collapse" title="User Info">
+                                <em class="icon-user"></em>
+                            </a>
+                        </li>
+                        <!-- END User avatar toggle-->
+                        <li>
+                            <!-- Button used to collapse the left sidebar. Only visible on tablet and desktops-->
+                            <a id="userPassword" href="#" title="change Password">
+                                <em class="icon-lock"></em>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- END Left navbar-->
+                    <!-- START Right Navbar-->
+                    <ul class="nav navbar-nav navbar-right">
+                        <!-- Fullscreen (only desktops)-->
+                        <li class="visible-lg">
+                            <a href="#" data-toggle-fullscreen="" title="full screen">
+                                <em class="fa fa-expand"></em>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" data-toggle-state="offsidebar-open" data-no-persist="true" title="Setting">
+                                <em class="icon-notebook"></em>
+                            </a>
+                        </li>
+                        <!-- END Contacts menu-->
+                        <li>
+                            <a href="#" data-toggle="logout" title="Exit">
+                                <em class="icon-logout"></em>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- END Right Navbar-->
+                </div>
+                <!-- END Nav wrapper-->
+            </nav>
+            <!-- END Top Navbar-->
+        </header>
+        <!-- sidebar-->
+        <aside class="aside">
+            <!-- START Sidebar (left)-->
+            <div class="aside-inner">
+                <!-- START user info-->
+                <div id="user-block" class="collapse in" aria-expanded="true">
+                    <div class="item user-block">
+                        <!-- User picture-->
+                        <div class="user-block-picture">
+                            <div class="user-block-status">
+                                @{
+                                    string username = MultiColorPen.COMMON.SessionHelper.ReadSession(MultiColorPen.COMMON.SessionKeys.LoginInfoKey).UserName;
+                                    var rbll = new MultiColorPen.BLL.base_userinfo();
+                                    var rdt = rbll.GetList("A.username='" + username + "' and A.isenable=1");
+                                    var avatar = (string.IsNullOrEmpty(rdt.Rows[0]["avatar"].ToString()) ? "2" : rdt.Rows[0]["avatar"]) + ".jpg";
+                                }
+                                <img src="~/Upload/Avatar/@(avatar)" alt="Avatar" width="60" height="60" class="img-thumbnail img-circle" />
+                                <div class="circle circle-success circle-lg"></div>
+                            </div>
+                        </div>
+                        <!-- Name and Job-->
+                        <div class="user-block-info">
+                            @{
+                                <span class="user-block-name">Hello, @MultiColorPen.COMMON.SessionHelper.ReadSession(MultiColorPen.COMMON.SessionKeys.LoginInfoKey).PName</span>
+                                <span class="user-block-role">@rdt.Rows[0]["rolename"]</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <!-- END user info-->
+                <nav class="sidebar" data-sidebar-anyclick-close="">
+                    <!-- START sidebar nav-->
+                    <ul class="nav">
+                        @{
+                            var bll = new MultiColorPen.BLL.sys_menuinfo();
+                            var dt = bll.GetList("pmenucode='-1' and isenable=1 and menucode in(select menucode from sys_rolemenu where rolecode='" + rdt.Rows[0]["rolecode"] + "') order by menusort asc").Tables[0];
+                            for (int i = 0; i < dt.Rows.Count; i++)
+                            {
+                                string active = i == 0 ? "active" : "";
+                                <li class="menu-first @active">
+                                    <a href="#@dt.Rows[i]["menucode"]" title="@dt.Rows[i]["menuname"]" data-toggle="collapse">
+                                        <em class="@dt.Rows[i]["menuicon"]"></em>
+                                        <span>@dt.Rows[i]["menuname"]</span>
+                                    </a>
+                                    <ul id="@dt.Rows[i]["menucode"]" class="nav sidebar-subnav collapse">
+                                        <li class="sidebar-subnav-header">@dt.Rows[i]["menuname"]</li>
+                                        @{
+                                            var dt2 = bll.GetList("pmenucode='" + dt.Rows[i]["menucode"].ToString() + "' and isenable=1  and menucode in(select menucode from sys_rolemenu where rolecode='" + rdt.Rows[0]["rolecode"] + "') order by menusort asc").Tables[0];
+                                            for (int j = 0; j < dt2.Rows.Count; j++)
+                                            {
+                                                <li class="menu-func">
+                                                    <a href="#" onclick="$.menutab.addTab(this);" title="@dt2.Rows[j]["menuname"]" data-url="@dt2.Rows[j]["linkaddress"]" class="menuItem" data-code="@dt2.Rows[j]["menucode"]">
+                                                        <em class="@dt2.Rows[j]["menuicon"]"></em>
+                                                        <span>@dt2.Rows[j]["menuname"]</span>
+                                                    </a>
+                                                </li>
+                                            }
+                                        }
+                                    </ul>
+                                </li>
+                                            }
+                        }
+                    </ul>
+
+                    <!-- END sidebar nav-->
+                </nav>
+            </div>
+            <!-- END Sidebar (left)-->
+        </aside>
+        <!-- offsidebar-->
+        <aside class="offsidebar hide">
+            <!-- START Off Sidebar (right)-->
+            <nav>
+                <div role="tabpanel">
+                    <!-- Nav tabs-->
+                    <ul role="tablist" class="nav nav-tabs nav-justified">
+                        <li role="presentation" class="active">
+                            <a href="#app-settings" aria-controls="app-settings" role="tab" data-toggle="tab">
+                                <em class="icon-equalizer fa-lg"></em>
+                            </a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#app-chat" aria-controls="app-chat" role="tab" data-toggle="tab">
+                                <em class="icon-user fa-lg"></em>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- Tab panes-->
+                    <div class="tab-content">
+                        <div id="app-settings" role="tabpanel" class="tab-pane fade in active">
+                            <h3 class="text-center text-thin">System settings</h3>
+                            <div class="p">
+                                <h4 class="text-muted text-thin">Theme</h4>
+                                <div class="table-grid mb">
+                                    <div class="col mb">
+                                        <div class="setting-color">
+                                            <label data-load-css="/Content/app/theme/theme-a.css">
+                                                <input type="radio" name="setting-theme" checked="checked" />
+                                                <span class="icon-check"></span>
+                                                <span class="split">
+                                                    <span class="color bg-info"></span>
+                                                    <span class="color bg-info-light"></span>
+                                                </span>
+                                                <span class="color bg-white"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col mb">
+                                        <div class="setting-color">
+                                            <label data-load-css="/Content/app/theme/theme-b.css">
+                                                <input type="radio" name="setting-theme" />
+                                                <span class="icon-check"></span>
+                                                <span class="split">
+                                                    <span class="color bg-green"></span>
+                                                    <span class="color bg-green-light"></span>
+                                                </span>
+                                                <span class="color bg-white"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col mb">
+                                        <div class="setting-color">
+                                            <label data-load-css="/Content/app/theme/theme-c.css">
+                                                <input type="radio" name="setting-theme" />
+                                                <span class="icon-check"></span>
+                                                <span class="split">
+                                                    <span class="color bg-purple"></span>
+                                                    <span class="color bg-purple-light"></span>
+                                                </span>
+                                                <span class="color bg-white"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col mb">
+                                        <div class="setting-color">
+                                            <label data-load-css="/Content/app/theme/theme-d.css">
+                                                <input type="radio" name="setting-theme" />
+                                                <span class="icon-check"></span>
+                                                <span class="split">
+                                                    <span class="color bg-danger"></span>
+                                                    <span class="color bg-danger-light"></span>
+                                                </span>
+                                                <span class="color bg-white"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="table-grid mb">
+                                    <div class="col mb">
+                                        <div class="setting-color">
+                                            <label data-load-css="/Content/app/theme/theme-e.css">
+                                                <input type="radio" name="setting-theme" />
+                                                <span class="icon-check"></span>
+                                                <span class="split">
+                                                    <span class="color bg-info-dark"></span>
+                                                    <span class="color bg-info"></span>
+                                                </span>
+                                                <span class="color bg-gray-dark"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col mb">
+                                        <div class="setting-color">
+                                            <label data-load-css="/Content/app/theme/theme-f.css">
+                                                <input type="radio" name="setting-theme" />
+                                                <span class="icon-check"></span>
+                                                <span class="split">
+                                                    <span class="color bg-green-dark"></span>
+                                                    <span class="color bg-green"></span>
+                                                </span>
+                                                <span class="color bg-gray-dark"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col mb">
+                                        <div class="setting-color">
+                                            <label data-load-css="/Content/app/theme/theme-g.css">
+                                                <input type="radio" name="setting-theme" />
+                                                <span class="icon-check"></span>
+                                                <span class="split">
+                                                    <span class="color bg-purple-dark"></span>
+                                                    <span class="color bg-purple"></span>
+                                                </span>
+                                                <span class="color bg-gray-dark"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col mb">
+                                        <div class="setting-color">
+                                            <label data-load-css="/Content/app/theme/theme-h.css">
+                                                <input type="radio" name="setting-theme" />
+                                                <span class="icon-check"></span>
+                                                <span class="split">
+                                                    <span class="color bg-danger-dark"></span>
+                                                    <span class="color bg-danger"></span>
+                                                </span>
+                                                <span class="color bg-gray-dark"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p">
+                                <h4 class="text-muted text-thin">Menu Bar</h4>
+                                <div class="clearfix">
+                                    <p class="pull-left">Collapsed</p>
+                                    <div class="pull-right">
+                                        <label class="switch">
+                                            <input id="chk-collapsed" type="checkbox" data-toggle-state="aside-collapsed">
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="clearfix">
+                                    <p class="pull-left">Collapsed Text</p>
+                                    <div class="pull-right">
+                                        <label class="switch">
+                                            <input id="chk-collapsed-text" type="checkbox" data-toggle-state="aside-collapsed-text">
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="app-chat" role="tabpanel" class="tab-pane fade">
+                            <h3 class="text-center text-thin">To be added</h3>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <!-- END Off Sidebar (right)-->
+        </aside>
+        <!-- Main section-->
+        <section>
+            <div class="content-wrapper">
+                <!-- Nav tabs-->
+                <ul role="tablist" class="nav nav-tabs" id="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#home" aria-controls="home" role="tab" data-toggle="tab">Index</a>
+                    </li>
+                </ul>
+                <!-- Tab panes-->
+                <div class="tab-content p0" id="tabcontent">
+                    <div id="home" role="tabpanel" class="tab-pane active">
+                        @*<iframe id="homeframe" class="tab_iframe" width="100%" height="100%" src="~/home/index.html" frameborder="0" data-id="/Home/Index"></iframe>*@
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Page footer-->
+        <footer>
+            <span>&copy; 2017 - Mobi Technology</span>
+        </footer>
+    </div>
+    <div id="userPasswordModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabelLarge" aria-hidden="true" class="modal fade">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 id="title" class="modal-title">Change Password</h4>
+                </div>
+                <div class="modal-body">
+                    <form role="form" data-parsley-validate="" novalidate="">
+                        <div class="form-group">
+                            <input id="oldpassword" type="password" placeholder="original password" class="form-control ime" required="required" data-parsley-error-message="Please enter the original password..." />
+                        </div>
+                        <div class="form-group">
+                            <input id="newpassword" type="password" placeholder="New password" class="form-control ime" required="required" data-parsley-error-message="Please enter a new password..." />
+                        </div>
+                        <div class="form-group mb0">
+                            <input type="password" placeholder="Password Confirmation" class="form-control ime" required="required" data-parsley-equalto='#newpassword' data-parsley-error-message="Two passwords are inconsistent..." />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-default">Exit</button>
+                    <button id="btnPasswordSave" type="button" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/Scripts/modernizr.js"></script>
+    <script src="~/Scripts/matchMedia.js"></script>
+    <script src="~/Scripts/jquery.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    <script src="~/Scripts/storage.js"></script>
+    <script src="~/Scripts/jqueryEasing.js"></script>
+    <script src="~/Scripts/animo.js"></script>
+    <script src="~/Scripts/slimscroll.js"></script>
+    <script src="~/Scripts/screenfull.js"></script>
+    <script src="~/Scripts/localize.js"></script>
+    <script src="~/Scripts/sparklines.js"></script>
+    <script src="~/Scripts/app.js"></script>
+    <script src="~/Scripts/indextab.js"></script>
+    <script src="~/Pscripts/Home/index.js"></script>
+    <script src="~/Content/alerts/alerts.js"></script>
+    <script src="~/Scripts/parsley.js"></script>
+</body>
+</html>

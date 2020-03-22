@@ -1,0 +1,339 @@
+﻿@{
+    ViewBag.Title = "OrderManage";
+    Layout = "~/Views/Shared/_BootstrapUI.cshtml";
+}
+<head>
+    <meta charset="utf-8" />
+    <meta name="renderer" content="webkit" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>layui table 添加一行并实现在编辑行记录后保存数据的方法</title>
+    <link rel="stylesheet" href="~/Content/layui/css/layui.css" />
+
+    <style type="text/css">
+        /*您可以将下列样式写入自己的样式表中*/
+        .childBody {
+            padding: 15px;
+        }
+
+        /*layui 元素样式改写*/
+        .layui-btn-sm {
+            line-height: normal;
+            font-size: 12.5px;
+        }
+
+        .layui-table-view .layui-table-body {
+            min-height: 256px;
+        }
+
+        .layui-table-cell .layui-input.layui-unselect {
+            height: 30px;
+            line-height: 30px;
+        }
+
+        /*设置 layui 表格中单元格内容溢出可见样式*/
+        .table-overlay .layui-table-view,
+        .table-overlay .layui-table-box,
+        .table-overlay .layui-table-body {
+            overflow: visible;
+        }
+
+        .table-overlay .layui-table-cell {
+            height: auto;
+            overflow: visible;
+        }
+
+        /*文本对齐方式*/
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+
+    <div class="panel panel-default mb0">
+        <input type="hidden" id="btn_val" />
+        <div id="btnOp" class="panel-heading">
+        </div>
+        <div class="panel-body bt panel-body-dt-normal">
+            <div class="table-responsive">
+                <table id="dt_btn" class="table table-striped nowrap"></table>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="orderAddModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabelLarge" aria-hidden="true" class="modal fade">
+
+        <div class="modal-dialog" style="width:900px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 id="title" class="modal-title">新增订单</h4>
+                </div>
+                <div class="modal-body">
+                    <section class="layui-col-md10" style="margin: 0 auto; float: none;">
+                        <div class="layui-card">
+                            <div class="layui-card-header">基于 layui table 添加一行并实现在编辑行记录后保存数据的方法</div>
+                            <div class="layui-card-body layui-text">
+                                <div id="toolbar">
+                                    <div>
+                                        <button type="button" class="layui-btn layui-btn-sm" data-type="addRow" title="添加一行">
+                                            <i class="layui-icon layui-icon-add-1"></i> 添加一行
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="tableRes" class="table-overlay layui-form">
+                                    <table id="dataTable" lay-filter="dataTable" class="layui-hide"></table>
+                                </div>
+                                <div id="action" class="text-center">
+                                    <button type="button" name="btnSave" class="layui-btn" data-type="save"><i class="layui-icon layui-icon-ok-circle"></i>保存</button>
+                                    <button type="reset" name="btnReset" class="layui-btn layui-btn-primary">取消</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--保存结果输出-->
+                        <div class="layui-card">
+                            <div class="layui-card-header">保存结果输出</div>
+                            <div class="layui-card-body layui-text">
+                                <blockquote class="layui-elem-quote layui-quote-nm">
+                                    <pre id="jsonResult"><span class="layui-word-aux">请点击“保存”后查看输出信息……</span></pre>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-default">Exit</button>
+                    <button id="btnSave" type="button" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Pscripts/Order/Order.js"></script>
+    <!--recommended script position-->
+    <script src="~/Content/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript">
+        var commodityList = [];
+        var commodityList2 = [];
+        var commoditynames;
+            $.ajax({
+                url: "/Commodity/GetAllCommodity",
+                async: false,
+                success: function (result) {
+                    console.log(11111111);
+                    console.log(result);
+                    result = eval('(' + result + ')');
+                    console.log(result);
+                    if (result.IsSucceed) {
+                        console.log("before string:");
+                        console.log(result.Entity);
+                        commodityList = eval(result.Entity);
+                        console.log("after string:");
+                        console.log(commodityList);
+                        var datas = "";
+                        for (var i = 0; i < commodityList.length; i++) {
+                            datas = datas + '{"id":' + commodityList[i].id + ',"name":"' + commodityList[i].special_ame + '"},';
+                        }                      
+                        commoditynames = JSON.parse("[" + datas.substring(0, datas.length - 1) + "]");
+                        console.log(commoditynames);
+                    }
+                }
+        });
+
+        //准备视图对象
+        //window.onload=function () {
+        window.viewObj = {
+            tbData: [{
+                tempId: new Date().valueOf(),
+                name: 1,
+                count:9,
+                price: '2.7',
+                state: 1
+            }],
+            typeData: commoditynames,
+            renderSelectOptions: function (data, settings) {
+                settings = settings || {};
+                var valueField = settings.valueField || 'value',
+                    textField = settings.textField || 'text',
+                    selectedValue = settings.selectedValue || "";
+                var html = [];
+                for (var i = 0, item; i < data.length; i++) {
+                    item = data[i];
+                    html.push('<option value="');
+                    html.push(item[valueField]);
+                    html.push('"');
+                    if (selectedValue && item[valueField] == selectedValue) {
+                        html.push(' selected="selected"');
+                    }
+                    html.push('>');
+                    html.push(item[textField]);
+                    html.push('</option>');
+                }
+                return html.join('');
+            }
+        };
+     
+        //layui 模块化引用
+        layui.use(['jquery', 'table', 'layer'], function () {
+            var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer;
+
+            //数据表格实例化
+            var tbWidth = $("#tableRes").width();
+            var layTableId = "layTable";
+            var tableIns = table.render({
+                elem: '#dataTable',
+                id: layTableId,
+                data: viewObj.tbData,
+                width: tbWidth,
+                page: true,
+                loading: true,
+                even: false, //不开启隔行背景
+                cols: [[
+                    { title: '序号', type: 'numbers', width: 99 },
+                    {
+                        field: 'name', title: '商品名', width: 200, templet: function (d) {
+                            var options = viewObj.renderSelectOptions(viewObj.typeData, { valueField: "id", textField: "name", selectedValue: d.name });
+                            return '<a lay-event="name"></a><select name="name" lay-filter="name" lay-search><option value="">请选择分类</option>' + options + '</select>';
+                        }
+                    },
+                    { field: 'price', title: '价格', edit: 'text', width: 100 },
+                    { field: 'count', title: '数量', edit: 'text', width: 100 },
+                    { field: 'singleTotalPrice', title: '单条总价', edit: 'text', width: 100 },
+                    {
+                        field: 'tempId', title: '操作', templet: function (d) {
+                            return '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del" lay-id="' + d.tempId + '"><i class="layui-icon layui-icon-delete"></i>移除</a>';
+                        }, width: 88
+                    }
+                ]],
+                done: function (res, curr, count) {
+                    viewObj.tbData = res.data;
+                }
+            });
+
+            //定义事件集合
+            var active = {
+                addRow: function () {	//添加一行
+                    var oldData = table.cache[layTableId];
+                    console.log(oldData);
+                    var newRow = { tempId: new Date().valueOf(), name: null, price: '请填写价格',count:'请填写数量', state: 0 };
+                    oldData.push(newRow);
+                    tableIns.reload({
+                        data: oldData
+                    });
+                },
+                updateRow: function (obj) {
+                    var oldData = table.cache[layTableId];
+                    console.log(oldData);
+                    for (var i = 0, row; i < oldData.length; i++) {
+                        row = oldData[i];
+                        if (row.tempId == obj.tempId) {
+                            $.extend(oldData[i], obj);
+                            return;
+                        }
+                    }
+                    tableIns.reload({
+                        data: oldData
+                    });
+                },
+                removeEmptyTableCache: function () {
+                    var oldData = table.cache[layTableId];
+                    for (var i = 0, row; i < oldData.length; i++) {
+                        row = oldData[i];
+                        if (!row || !row.tempId) {
+                            oldData.splice(i, 1);    //删除一项
+                        }
+                        continue;
+                    }
+                    tableIns.reload({
+                        data: oldData
+                    });
+                },
+                save: function () {
+                    var oldData = table.cache[layTableId];
+                    console.log(oldData);
+                    for (var i = 0, row; i < oldData.length; i++) {
+                        row = oldData[i];
+                        if (!row.name) {
+                            layer.msg("检查每一行，请选商品名称！", { icon: 5 }); //提示
+                            return;
+                        }
+                    }
+                    document.getElementById("jsonResult").innerHTML = JSON.stringify(table.cache[layTableId], null, 2);	//使用JSON.stringify() 格式化输出JSON字符串
+                }
+            }
+
+            //激活事件
+            var activeByType = function (type, arg) {
+                if (arguments.length === 2) {
+                    active[type] ? active[type].call(this, arg) : '';
+                } else {
+                    active[type] ? active[type].call(this) : '';
+                }
+            }
+
+            //注册按钮事件
+            $('.layui-btn[data-type]').on('click', function () {
+                var type = $(this).data('type');
+                activeByType(type);
+            });
+
+            //监听select下拉选中事件
+            form.on('select(name)', function (data) {
+                var elem = data.elem; //得到select原始DOM对象
+                var elemParentAllChild = elem.parentNode.parentNode.parentNode.childNodes;//获取当前行的所有td
+                elemParentAllChild[2].childNodes[0].innerHTML = 1;
+                $(elem).prev("a[lay-event='name']").trigger("click");
+
+                var commoditySingle="";
+                $.ajax({
+                    url: "/Commodity/SingleCommodity/"+data.value,
+                    async: false,
+                    success: function (result) {
+                        commoditySingle = eval('(' + result + ')');
+                        elemParentAllChild[2].childNodes[0].innerHTML = commoditySingle.price;//设置价格
+                    }
+                });
+            });
+
+            //监听工具条
+            table.on('tool(dataTable)', function (obj) {
+                var data = obj.data, event = obj.event, tr = obj.tr; //获得当前行 tr 的DOM对象;
+                //console.log(data);
+                switch (event) {
+                    case "type":
+                        //console.log(data);
+                        var select = tr.find("select[name='type']");
+                        if (select) {
+                            var selectedVal = select.val();
+                            if (!selectedVal) {
+                                layer.tips("请选择一个分类", select.next('.layui-form-select'), { tips: [3, '#FF5722'] }); //吸附提示
+                            }
+                            console.log(selectedVal);
+                            $.extend(obj.data, { 'type': selectedVal });
+                            activeByType('updateRow', obj.data);	//更新行记录对象
+                        }
+                        break;
+                    case "state":
+                        var stateVal = tr.find("input[name='state']").prop('checked') ? 1 : 0;
+                        $.extend(obj.data, { 'state': stateVal })
+                        activeByType('updateRow', obj.data);	//更新行记录对象
+                        break;
+                    case "del":
+                        layer.confirm('真的删除行么？', function (index) {
+                            obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                            layer.close(index);
+                            activeByType('removeEmptyTableCache');
+                        });
+                        break;
+                }
+            });
+            });
+       // }
+    </script>

@@ -1,0 +1,70 @@
+﻿@{
+    ViewBag.Title = "Manage Log";
+    Layout = "~/Views/Shared/_BootstrapUI.cshtml";
+}
+
+<link href="~/Content/dataTable/dtConfig.css" rel="stylesheet" />
+<link href="~/Content/datetimePicker/datetimePicker.css" rel="stylesheet" />
+
+<div class="panel panel-default mb0">
+    <div class="panel-body bb panel_inquire">
+        <form id="form_inquire" role="form" class="form-inline">
+            <div class="form-group">
+                <select id="s_logtype" class="form-control">
+                    <option value="">Type</option>
+                    <option value="Login">Login</option>
+                    <option value="Operating">Operating</option>
+                    <option value="Error">Error</option>
+                    <option value="Platform Operation">Platform Operation</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <div id="datetimepicker_st" class="input-group date">
+                    <input id="date_st" type="text" class="form-control" placeholder="Begin Time" style="width:110px;">
+                    <span class="input-group-addon">
+                        <span class="fa fa-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div id="datetimepicker_ed" class="input-group date">
+                    <input id="date_ed" type="text" class="form-control" placeholder="End Time" style="width:110px;">
+                    <span class="input-group-addon">
+                        <span class="fa fa-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <button id="btnInquire" type="button" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+    <div id="btnOp" class="panel-heading"></div>
+    <div class="panel-body bt panel-body-dt">
+        <div class="table-responsive">
+            <table id="dt_log" class="table table-striped nowrap"></table>
+        </div>
+    </div>
+</div>
+
+
+<div id="logManageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabelLarge" aria-hidden="true" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 id="c_title" class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <div id="content"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-default">Exit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Content/datetimePicker/moment.js"></script>
+<script src="~/Content/datetimePicker/datetimePicker.js"></script>
+<script src="~/Pscripts/System/LogManage.js"></script>

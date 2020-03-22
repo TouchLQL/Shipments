@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiColorPen.BLL", "MultiColorPen.BLL\MultiColorPen.BLL.csproj", "{E62212A4-2DEA-41FB-B52F-CC3FADD49D85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiColorPen.COMMON", "MultiColorPen.COMMON\MultiColorPen.COMMON.csproj", "{DF2B2391-21B3-4723-961E-3D1E04ECD29A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiColorPen.DAL", "MultiColorPen.DAL\MultiColorPen.DAL.csproj", "{E55A5F3B-4BD0-4572-8CEE-0B58D7E350B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiColorPen.DBUtility", "MultiColorPen.DBUtility\MultiColorPen.DBUtility.csproj", "{39CAF9B8-E811-413A-8C0D-E45034A203DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiColorPen.MODEL", "MultiColorPen.MODEL\MultiColorPen.MODEL.csproj", "{DAB9000C-751F-47FC-9FA3-B5457152B72B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebGame", "WebGame\WebGame.csproj", "{6AA5EDF5-A2D0-4B94-9A8B-FA9050290D86}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E62212A4-2DEA-41FB-B52F-CC3FADD49D85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E62212A4-2DEA-41FB-B52F-CC3FADD49D85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E62212A4-2DEA-41FB-B52F-CC3FADD49D85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E62212A4-2DEA-41FB-B52F-CC3FADD49D85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF2B2391-21B3-4723-961E-3D1E04ECD29A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF2B2391-21B3-4723-961E-3D1E04ECD29A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF2B2391-21B3-4723-961E-3D1E04ECD29A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF2B2391-21B3-4723-961E-3D1E04ECD29A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E55A5F3B-4BD0-4572-8CEE-0B58D7E350B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E55A5F3B-4BD0-4572-8CEE-0B58D7E350B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E55A5F3B-4BD0-4572-8CEE-0B58D7E350B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E55A5F3B-4BD0-4572-8CEE-0B58D7E350B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39CAF9B8-E811-413A-8C0D-E45034A203DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39CAF9B8-E811-413A-8C0D-E45034A203DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39CAF9B8-E811-413A-8C0D-E45034A203DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39CAF9B8-E811-413A-8C0D-E45034A203DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAB9000C-751F-47FC-9FA3-B5457152B72B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAB9000C-751F-47FC-9FA3-B5457152B72B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAB9000C-751F-47FC-9FA3-B5457152B72B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAB9000C-751F-47FC-9FA3-B5457152B72B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AA5EDF5-A2D0-4B94-9A8B-FA9050290D86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AA5EDF5-A2D0-4B94-9A8B-FA9050290D86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AA5EDF5-A2D0-4B94-9A8B-FA9050290D86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AA5EDF5-A2D0-4B94-9A8B-FA9050290D86}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BAEA5D6C-EF5C-42B1-99D6-CA56E960AB04}
+	EndGlobalSection
+EndGlobal

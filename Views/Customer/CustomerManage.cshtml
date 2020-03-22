@@ -1,0 +1,70 @@
+﻿@{
+    ViewBag.Title = "Billing";
+    Layout = "~/Views/Shared/_BootstrapUI.cshtml";
+}
+
+<div class="panel panel-default mb0">
+    <input type="hidden" id="btn_val" />
+    <div id="btnOp" class="panel-heading">
+    </div>
+    <div class="panel-body bt panel-body-dt-normal">
+        <div class="table-responsive">
+            <table id="dt_btn" class="table table-striped nowrap"></table>
+        </div>
+    </div>
+</div>
+<div id="btnCustomerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabelLarge" aria-hidden="true" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 id="title" class="modal-title">新增商家</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal" data-parsley-validate="" novalidate="">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">商品名称</label>
+                        <div class="col-md-10">
+                            <input id="id" type="hidden" value="-1" />
+                            <input id="name" type="text" maxlength="15" placeholder="请输入商家名称" class="form-control" required="required" data-parsley-error-message="请输入商家名称..." />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">商家地址</label>
+                        <div class="col-md-10">
+                            <input id="address" type="text" maxlength="15" placeholder="请输入商家地址" class="form-control" required="required" data-parsley-error-message="请输入商家地址..." />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">商家电话</label>
+                        <div class="col-md-10">
+                            <input id="tel" type="text" maxlength="30" placeholder="请输入商家电话" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">联系人</label>
+                        <div class="col-md-10">
+                            <input id="person" type="text" maxlength="30" placeholder="请输入联系人" class="form-control" required="required" data-parsley-error-message="请输入联系人..." />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">备注</label>
+                        <div class="col-md-10">
+                            <input id="mark" type="text" maxlength="150" placeholder="请输入备注" class="form-control" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-default">退出</button>
+                <button id="btnSave" type="button" class="btn btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Content/datetimePicker/moment.js"></script>
+<script src="~/Content/datetimePicker/datetimePicker.js"></script>
+<script src="~/Pscripts/Customer/Custtomer.js"></script>

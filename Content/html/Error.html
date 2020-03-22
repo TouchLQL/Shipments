@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="imagetoolbar" content="no" />
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>跳转提示</title>
+    <style>
+        body {
+            background: #f9fee8;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            font-family: microsoft yahei, Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            color: #666666;
+        }
+
+        .error_page {
+            width: 600px;
+            padding: 50px;
+            margin: auto;
+        }
+
+            .error_page h1 {
+                margin: 20px 0 0;
+            }
+
+            .error_page p {
+                margin: 10px 0;
+                padding: 0;
+            }
+
+        a {
+            color: #9caa6d;
+            text-decoration: none;
+        }
+
+            a:hover {
+                color: #9caa6d;
+                text-decoration: underline;
+            }
+    </style>
+
+</head>
+
+<body class="login" onload="Load()">
+    <div class="error_page">
+        <img alt="Kidmondo_face_sad" src="kidmondo_face_sad.gif" />
+        <h1>抱歉,出错啦...</h1>
+        <p class="error"></p>
+        <p class="detail"></p>
+        <p class="jump">
+            <b id="wait"></b>
+        </p>
+        <p>
+            <a href="/Home/Login">立即跳转</a>
+        </p>
+    </div>
+    <script language="javascript">
+        var secs = 5; //倒计时的秒数
+        function Load() {
+            for (var i = secs; i >= 0; i--) {
+                window.setTimeout('doUpdate(' + i + ')', (secs - i) * 1000);
+            }
+        }
+
+        function doUpdate(num) {
+            document.getElementById('wait').innerHTML = '将在' + '<label style="color: #9caa6d;">' + num + '</label>' + '秒后自动跳转到登录界面';
+            if (num == 0) {
+                window.parent.parent.location.href = "/Home/Login";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+﻿@{
+    ViewBag.Title = "Billing";
+    Layout = "~/Views/Shared/_BootstrapUI.cshtml";
+}
+@using System.Data;
+
+<div class="panel panel-default mb0">
+    <div class="panel-body bb panel_inquire">
+        <form id="form_inquire" role="form" class="form-inline">
+            <div class="form-group">
+                <select id="commodityType" name="commodityType" class="selectpicker show-tick form-control" data-live-search="false">
+                    <option value=''>请选择</option>
+                    @{
+                        MultiColorPen.BLL.commodity customerinfo = new MultiColorPen.BLL.commodity();
+                        DataTable dt = customerinfo.GetTypeList().Tables[0];
+                        foreach (DataRow dr in dt.Rows)
+                        {
+                            <option value='@(dr["type"])'>@(dr["type"])</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label>商品名:</label>
+                <div id="" class="input-group date">
+                    <input id="commodity_name" type="text" class="form-control" style="width:110px;">
+                </div>
+            </div>
+            <button id="btnInquire" type="button" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+    <div id="btnOp" class="panel-heading"></div>
+    <div class="panel-body bt panel-body-dt">
+        <div class="table-responsive">
+            <table id="dt_log" class="table table-striped nowrap"></table>
+        </div>
+    </div>
+</div>
+<div id="btnComodityModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabelLarge" aria-hidden="true" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 id="title" class="modal-title">新增商品</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" class="form-horizontal" data-parsley-validate="" novalidate="">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">商品名</label>
+                        <div class="col-md-10">
+                            <input id="id" type="hidden" value="-1" />
+                            <input id="name" type="text" maxlength="15" placeholder="请输入商品名" class="form-control" required="required" data-parsley-error-message="请输入商品名..." />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">商品类型</label>
+                        <div class="col-md-10">
+                            <input id="type" type="text" maxlength="15" placeholder="请输入商品类型" class="form-control" required="required" data-parsley-error-message="请输入商品类型..." />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">库存</label>
+                        <div class="col-md-10">
+                            <input id="count" type="text" maxlength="30" placeholder="请输入库存数" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">单位</label>
+                        <div class="col-md-10">
+                            <input id="unit" type="text" maxlength="30" placeholder="请输入单位" class="form-control" required="required" data-parsley-error-message="请输入单位..." />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">特供商家</label>
+                        <div class="col-md-10">
+                            <input id="special_supply" type="text" maxlength="30" placeholder="请输入特供商家，如:(某某酒店)" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">价格</label>
+                        <div class="col-md-10">
+                            <input id="price" type="text" maxlength="30" placeholder="请输入价格" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">备注</label>
+                        <div class="col-md-10">
+                            <input id="mark" type="text" maxlength="150" placeholder="请输入备注" class="form-control" />
+                        </div>
+                    </div>
+                    @*<div class="form-group">
+                            <label class="col-md-2 control-label">Button icon</label>
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <input id="btnicon" type="text" class="form-control" placeholder="Button icon" required="required" data-parsley-error-message="Please select the button icon..." />
+                                    <span class="input-group-btn vertical-top">
+                                        <button type="button" data-toggle="modal" data-target="#iconModal" class="btn btn-default"><em class="icon-emotsmile"></em></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>*@
+                    @*<div class="form-group">
+                            <label class="col-md-2 control-label">Button sorting</label>
+                            <div class="col-md-10">
+                                <input id="btnsort" type="number" placeholder="Button sorting" class="form-control" />
+                            </div>
+                        </div>*@
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-default">退出</button>
+                <button id="btnSave" type="button" class="btn btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Content/datetimePicker/moment.js"></script>
+<script src="~/Content/datetimePicker/datetimePicker.js"></script>
+<script src="~/Pscripts/Commodity/Commodity.js"></script>
