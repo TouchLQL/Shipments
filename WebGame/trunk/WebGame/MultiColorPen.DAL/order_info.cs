@@ -313,12 +313,13 @@ namespace MultiColorPen.DAL
             {
                 strSql.Append(" where " + strWhere);
             }
-            strSql.Append(" order by customer_name,delivery_time)T1 ");
+            strSql.Append(" )T1 ");
             strSql.Append("   left join ");
-            strSql.Append("   (select order_number, sum(commodity_price) as sumAmount from order_detail ");
+            strSql.Append("   (select order_number, sum(commodity_price*commodity_count) as sumAmount from order_detail ");
             strSql.Append("   where is_del = 0 ");
             strSql.Append("   GROUP BY  order_number)T ");
             strSql.Append("  on T.order_number = T1.number ");
+            strSql.Append(" order by T1.customer_name,T1.delivery_time ");
             
             return DbHelperMySQL.Query(strSql.ToString());
         }
