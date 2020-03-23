@@ -235,6 +235,7 @@ var Btn_PrintOne = function () {
             result = eval('(' + result + ')');
             result = eval(result);
             var trRow;
+
             for (var i = 0; i < result.ds.length; i++) {
                 singlePrice = (result.ds[i].commodity_price * result.ds[i].commodity_count).toFixed(2);
                 totalAccount = Number(totalAccount) + Number(singlePrice);
@@ -253,6 +254,7 @@ var Btn_PrintBaoBiao = function () {
     var datest = $('#date_st').val();
     var dateed = $('#date_ed').val();
     var searchData = { customerId: s_customerId, datest: datest, dateed: dateed };
+    var newTable;
     $.ajax({
         type: "get",
         contentType: "application/json;utf-8",
@@ -268,7 +270,7 @@ var Btn_PrintBaoBiao = function () {
             var listCache = [];
             var resultCopy = result;//用来操作的数据列表
             var customerNameCache;
-            var elementBaoBiao = document.getElementById("printBaoBiaoBody"); //获取一个div对象
+            var elementBaoBiao = document.getElementById("printBaoBiao"); //获取一个div对象
             var totalAmount = 0;
             var statusJudge = 1;//状态判断变量
             var newTr;
@@ -276,28 +278,47 @@ var Btn_PrintBaoBiao = function () {
                 if (i === result.length) {
                     break;
                 }
-                debugger
                 console.log("iiiiiiiii"+i);
                 customerNameCache = result[i].customer_name;
                 listCache = [];
-                $("#printCustomerNameBaoBiao").innerHTML += customerNameCache;
+                //$("#printCustomerNameBaoBiao").innerHTML += customerNameCache;
                 statusJudge = 1;//赋为1；新的一页打印开始 
-                for (var j = i; j < resultCopy.length; j++) {
-                    totalAmount = totalAmount + resultCopy[j].sumAmount;//计算总金额。
-                    if (j === resultCopy.length) {
-                        i = j;
-                        break;
-                    }
-                    else if (resultCopy[j].customer_name === customerNameCache) {
+                newTable = "";//新的一个table置空
+                newTable += '<div><table  border="1" style="width:100%;font-size:20px;font-family:"宋体";">' +
+                    '<tbody id="printBaoBiaoBody">' +
+                    ' <tr style="border-bottom: none;">' +
+                    ' <th colspan="4">' +
+                    '   <p style="text-align:center;font-size:24px;font-family:"微软雅黑"">重庆品佳调味</p>' +
+                    ' </th>' +
+                    ' </tr>' +
+                    '  <tr style="height:20px;">' +
+                    '    <th colspan="4"></th>' +
+                    ' </tr>' +
+                    ' <tr>' +
+                    '     <th colspan="4" style="text-align:left;">购货单位:' + customerNameCache + '</th>' +
+                    ' </tr>'+
+                    ' <tr>' +
+                    '     <th style="text-align:left;">日期</th>' +
+                    '     <th style="text-align:left;">金额</th>' +
+                    '     <th style="text-align:left;">日期</th>' +
+                    '     <th style="text-align:left;">金额</th>' +
+                    ' </tr>';
+                for (var j = i; j <= resultCopy.length; j++) {                  
+                    //if (j >= resultCopy.length) {
+                    //    i = j+1;
+                    //    break;
+                    //}
+                    //else
+                     if (j < resultCopy.length && resultCopy[j].customer_name === customerNameCache) {
+                         totalAmount = Number(totalAmount) + Number(resultCopy[j].sumAmount);//计算总金额。
                         //如果为奇数，那么将该条数据放在第一列
                         if (statusJudge % 2 === 1) {
-                            newTr = "<tr><td style='width:25%;'>日期1：" + resultCopy[j].delivery_time + ",金额:" + resultCopy[j].sumAmount + "</td>";
+                            newTable += "<tr><td style='width:25%;'>" + resultCopy[j].delivery_time + "</td><td style='width:25%;'>" + resultCopy[j].sumAmount + "</td>";
                         }
                         //如果为偶数，放在第二列
                         else {
-                            newTr += "<td style='width:25%;'>日期2：" + resultCopy[j].delivery_time + ",金额:" + resultCopy[j].sumAmount + "</td></tr>";
-                            console.log("偶数 new tr:"+newTr);
-                            $("#printBaoBiaoTable tr").after(newTr);
+                            newTable += "<td style='width:25%;'>" + resultCopy[j].delivery_time + "</td><td style='width:25%;'>" + resultCopy[j].sumAmount + "</td></tr>";
+                            //$("#printBaoBiaoTable tr").after(newTr);
                         }
                         statusJudge++;
                         //listCache.push(resultCopy[j]);
@@ -305,35 +326,35 @@ var Btn_PrintBaoBiao = function () {
                     else {
                         //如果以奇数列结尾，那么结束是加上一个</tr>
                         if (statusJudge % 2 === 0) {
-                            newTr += "<td></td></tr>";
+                            newTable += "<td style='width:25%;'></td><td style='width:25%;'></td></tr>";
                             console.log("结束 new tr:"+newTr);
-                            $("#printBaoBiaoTable tr").after(newTr);
+                            //$("#printBaoBiaoTable tr").after(newTr);
                         }
-
-                        //$("#printOrderTable tr:eq(" + (4 + i) + ")").after(trRow);
-
-                        $("#printBaoBiaoTable tr").append(
-                            "<tr>"+
-                            "<th colspan='4'> <p style='float:left;'>合计金额： </p>" +
-                            "<p style = 'margin-left:25px;float:left;'> 万</p >" +
+                        //$("#printOrderTable tr:eq(" + (4 + i) + ")").after(trRow);                  
+                        newTable +="<tr>"+
+                            "<th colspan='2'> <p style='float:left;'>合计金额： </p>" +
+                            "<p style = 'margin-left:25px;float:left;'> 万</p>" +
                             "<p style='margin - left: 25px; float: left;'>仟</p> " +
                             "<p style = 'margin - left: 25px; float: left;'> 佰</p> "+
-                            "<p style = 'margin - left: 25px; float: left;'> 拾</p >"+
+                            "<p style = 'margin - left: 25px; float: left;'> 拾</p>"+
                             "<p style='margin - left: 25px; float: left;'>元</p> " +
-                            "<p style='margin - left: 25px; float: left;'> 角</p > "+
-                            "<p style = 'margin - left: 25px; float: left;'> 分</p ></th > " +
+                            "<p style='margin - left: 25px; float: left;'> 角</p> "+
+                            "<p style = 'margin - left: 25px; float: left;'> 分</p></th> " +
                             "<th colspan='2' id='totalAcount'>¥：" + totalAmount+"元</th>" +
-                            "</tr></div><div style='page-break-after: always;'></div>");
+                            "</tr>";
+                        newTable += '</tbody></table></div><div style="page-break-after:always;"></div>';
+                        console.log("new table");
+                        console.log(newTable);
                         //elementBaoBiao.innerHTML += "</div><div style='page-break-after: always;'></div>";
                         i = j;
                         break;
                     }
                 }
+                elementBaoBiao.innerHTML += newTable;
             }
-            debugger;
-            console.log("html info");
-            console.log(elementBaoBiao);
-            //$z("#printBaoBiao").jqprint();
+            console.log("html info");         
+            console.log(elementBaoBiao.innerHTML);  
+            $z("#printBaoBiao").jqprint();
             //var trRow;
             //for (var i = 0; i < result.ds.length; i++) {
             //    singlePrice = (result.ds[i].commodity_price * result.ds[i].commodity_count).toFixed(2);
