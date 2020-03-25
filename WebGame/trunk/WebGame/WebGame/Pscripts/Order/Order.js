@@ -27,7 +27,7 @@ $z(document).ready(function () {
         processing: true,
         serverSide: true,
         columns: [
-            { data: null, title: "序号", bSortable: true },
+            //{ data: null, title: "序号", bSortable: true },
             { data: "number", title: "订单号", bSortable: true },
             { data: "customer_name", title: "商家名字" },
             { data: "customer_address", title: "商家地址" },
@@ -35,7 +35,6 @@ $z(document).ready(function () {
             { data: "customer_person", title: "联系人" },
             { data: "create_time", title: "创建时间", bSortable: true },
             { data: "delivery_time", title: "发货时间", bSortable: true },
-            { data: "status", title: "状态" },
             { data: "mark", title: "备注" }
         ],
         columnDefs: [{
@@ -47,7 +46,7 @@ $z(document).ready(function () {
             },
             targets: [5]
         }],
-        order: [[2, 'desc']],
+        order: [[5, 'desc']],
         data: {},
         ajax: function (data, callback, settings) {
             //封装请求参数
@@ -101,7 +100,7 @@ $z(document).ready(function () {
     //console.log("timepickerz" + $z.fn.jquery);
     //日期框初始化 $q
     //此处只能html页面定义的$q和$,而该js头部定义的$z,会报$z.datetimepicker不是函数，不知道为啥
-    $q('#date_st,#date_ed,#date_delivery').datetimepicker({
+    $q('#date_st,#date_ed,#date_delivery,#date_delivery_value').datetimepicker({
         format: 'YYYY-MM-DD'
     });
 
@@ -236,10 +235,16 @@ var Btn_PrintOne = function () {
             result = eval(result);
             var trRow;
 
-            for (var i = 0; i < result.ds.length; i++) {
-                singlePrice = (result.ds[i].commodity_price * result.ds[i].commodity_count).toFixed(2);
-                totalAccount = Number(totalAccount) + Number(singlePrice);
-                trRow = "<tr><th>" + result.ds[i].commodity_name + "</th><th>" + result.ds[i].commodity_count + "</th><th>" + result.ds[i].commodity_unit + "</th><th>" + result.ds[i].commodity_price + "</th><th>" + singlePrice + "</th>" + "</th><th>" + result.ds[i].mark + "</th></tr>";
+            for (var i = 0; i < 15; i++) {
+                if (i < result.ds.length) {
+                    singlePrice = (result.ds[i].commodity_price * result.ds[i].commodity_count).toFixed(2);
+                    totalAccount = Number(totalAccount) + Number(singlePrice);
+                    trRow = "<tr><th style='text-align:center;'>" + result.ds[i].commodity_name + "</th><th style='text-align:center;'>" + result.ds[i].commodity_count + "</th><th style='text-align:center;'>" + result.ds[i].commodity_unit + "</th><th style='text-align:center;'>" + result.ds[i].commodity_price + "</th><th style='text-align:center;'>" + singlePrice + "</th>" + "<th style='text-align:center;'>" + result.ds[i].mark + "</th></tr>";
+
+                }
+                else {
+                    trRow = "<tr><th style='height:24px;'></th><th></th><th></th><th></th><th></th><th></th></tr>";
+                }
                 $("#printOrderTable tr:eq(" + (4 + i) + ")").after(trRow);
             }
             $("#totalAcount").text("¥：" + totalAccount);
@@ -265,8 +270,6 @@ var Btn_PrintBaoBiao = function () {
         success: function (result) {
             result = eval('(' + result + ')');
             result = eval(result).Entity;
-            console.log("打印多个");
-            console.log(result);
             var listCache = [];
             var resultCopy = result;//用来操作的数据列表
             var customerNameCache;
@@ -274,17 +277,18 @@ var Btn_PrintBaoBiao = function () {
             var totalAmount = 0;
             var statusJudge = 1;//状态判断变量
             var newTr;
+            var tableObjMid;//table中间变量
+            var x; //newCell
             for (var i = 0; i <= result.length;) {
                 if (i === result.length) {
                     break;
                 }
-                console.log("iiiiiiiii"+i);
                 customerNameCache = result[i].customer_name;
                 listCache = [];
                 //$("#printCustomerNameBaoBiao").innerHTML += customerNameCache;
                 statusJudge = 1;//赋为1；新的一页打印开始 
                 newTable = "";//新的一个table置空
-                newTable += '<div><table  border="1" style="width:100%;font-size:20px;font-family:"宋体";">' +
+                newTable += '<table  border="1" style="width:100%;font-size:20px;font-family:"宋体";">' +
                     '<tbody id="printBaoBiaoBody">' +
                     ' <tr style="border-bottom: none;">' +
                     ' <th colspan="4">' +
@@ -304,11 +308,9 @@ var Btn_PrintBaoBiao = function () {
                     '     <th style="text-align:left;">金额</th>' +
                     ' </tr>';
                 for (var j = i; j <= resultCopy.length; j++) {                  
-                    //if (j >= resultCopy.length) {
-                    //    i = j+1;
-                    //    break;
+                    //if (j <= resultCopy.length) {
+
                     //}
-                    //else
                      if (j < resultCopy.length && resultCopy[j].customer_name === customerNameCache) {
                          totalAmount = Number(totalAmount) + Number(resultCopy[j].sumAmount);//计算总金额。
                         //如果为奇数，那么将该条数据放在第一列
@@ -324,46 +326,60 @@ var Btn_PrintBaoBiao = function () {
                         //listCache.push(resultCopy[j]);
                     }
                     else {
-                        //如果以奇数列结尾，那么结束是加上一个</tr>
+                        //如果以奇数列结尾，那么结束时加上一个</tr>
                         if (statusJudge % 2 === 0) {
                             newTable += "<td style='width:25%;'></td><td style='width:25%;'></td></tr>";
                             console.log("结束 new tr:"+newTr);
                             //$("#printBaoBiaoTable tr").after(newTr);
                         }
-                        //$("#printOrderTable tr:eq(" + (4 + i) + ")").after(trRow);                  
+                        //最后加上一行总金额        
                         newTable +="<tr>"+
                             "<th colspan='2'> <p style='float:left;'>合计金额： </p>" +
                             "<p style = 'margin-left:25px;float:left;'> 万</p>" +
-                            "<p style='margin - left: 25px; float: left;'>仟</p> " +
-                            "<p style = 'margin - left: 25px; float: left;'> 佰</p> "+
-                            "<p style = 'margin - left: 25px; float: left;'> 拾</p>"+
-                            "<p style='margin - left: 25px; float: left;'>元</p> " +
-                            "<p style='margin - left: 25px; float: left;'> 角</p> "+
-                            "<p style = 'margin - left: 25px; float: left;'> 分</p></th> " +
+                            "<p style='margin-left: 25px; float: left;'>仟</p> " +
+                            "<p style = 'margin-left: 25px; float: left;'> 佰</p> "+
+                            "<p style = 'margin-left: 25px; float: left;'> 拾</p>"+
+                            "<p style='margin-left: 25px; float: left;'>元</p> " +
+                            "<p style='margin-left: 25px; float: left;'> 角</p> "+
+                            "<p style = 'margin-left: 25px; float: left;'> 分</p></th> " +
                             "<th colspan='2' id='totalAcount'>¥：" + totalAmount+"元</th>" +
                             "</tr>";
-                        newTable += '</tbody></table></div><div style="page-break-after:always;"></div>';
-                        console.log("new table");
-                        console.log(newTable);
+                         newTable += '</tbody></table></div><div style="page-break-after:always;">';
+                         tableObjMid = $(newTable).get(0); //对当前table进行加空行填满
+                         //console.log(tableObjMid.rows.length);
+                         while (tableObjMid.rows.length < 22) {
+                             console.log(tableObjMid.rows.length);
+                             //$("#printOrderTable tr:eq(" + (4 + i) + ")").after(trRow);
+                             x = tableObjMid.insertRow(tableObjMid.rows.length - 1);
+                             x.style.cssText = 'height:25px';
+                             x.insertCell(0);
+                             x.insertCell(1);
+                             x.insertCell(2);
+                             x.insertCell(3);
+                             x.clientHeight
+                             console.log("add row");
+                             console.log(tableObjMid);
+                             console.log(tableObjMid.rows.length);
+                         }
+                         tableObjMid = $(tableObjMid).html();//dom对象转字符串
+                         console.log(tableObjMid);
+                         tableObjMid = '<table  border="1" style="width:100%;font-size:20px;font-family:"宋体";">' + tableObjMid+'</tbody></table></div><div style="page-break-after:always;">';
+                         console.log("new table");
+                         console.log(tableObjMid);
                         //elementBaoBiao.innerHTML += "</div><div style='page-break-after: always;'></div>";
                         i = j;
                         break;
                     }
                 }
-                elementBaoBiao.innerHTML += newTable;
+                elementBaoBiao.innerHTML += tableObjMid;
             }
-            console.log("html info");         
-            console.log(elementBaoBiao.innerHTML);  
-            $z("#printBaoBiao").jqprint();
-            //var trRow;
-            //for (var i = 0; i < result.ds.length; i++) {
-            //    singlePrice = (result.ds[i].commodity_price * result.ds[i].commodity_count).toFixed(2);
-            //    totalAccount = Number(totalAccount) + Number(singlePrice);
-            //    trRow = "<tr><th>" + result.ds[i].commodity_name + "</th><th>" + result.ds[i].commodity_count + "</th><th>" + result.ds[i].commodity_unit + "</th><th>" + result.ds[i].commodity_price + "</th><th>" + singlePrice + "</th>" + "</th><th>" + result.ds[i].mark + "</th></tr>";
-            //    $("#printOrderTable tr:eq(" + (4 + i) + ")").after(trRow);
-            //}
-            //$("#totalAcount").text("¥：" + totalAccount);
-            //$("#printOrder").jqprint();
+            console.log("html info");       
+            $z("#printBaoBiao").jqprint({
+                debug: false,
+                importCSS: true,
+                printContainer: true,
+                operaSupport: false
+            });
         }
     });
 }
