@@ -52,6 +52,9 @@
         .text-center {
             text-align: center;
         }
+        /*#printOrderTable th {
+            text-align:center;
+        }*/
     </style>
 </head>
 <div class="panel panel-default mb0">
@@ -243,7 +246,7 @@
             </tr>
             @*<tr id="orderInfoPrint">
 
-             </tr>*@
+                </tr>*@
             <tr>
                 <th colspan="4"> <p style="float:left;">合计金额： </p>  <p style="margin-left:25px;float:left;">万</p> <p style="margin-left:25px;float:left;">仟</p> <p style="margin-left:25px;float:left;">佰</p> <p style="margin-left:25px;float:left;">拾</p> <p style="margin-left:25px;float:left;">元</p> <p style="margin-left:25px;float:left;">角</p> <p style="margin-left:25px;float:left;">分</p></th>
                 <th colspan="2" id="totalAcount">¥：</th>
@@ -252,31 +255,15 @@
         <div style="font-size:18px;font-family:'宋体';margin-top:10px;">
             <div><p>地址：重庆学田湾农贸市场农创超市1楼</p> </div>
             <div><p style="float:left;">电话：023-63740959</p><p style="margin-left:200px;">023-63656727</p> </div>
-            <div><p style="float:left;">电话：13650563542</p><p style="margin-left:200px;">13883349986</p> </div>
-            <div><p>联系人：胡晓英  胡小兰</p> </div>
+            <div><p style="float:left;">电话：13883349986</p><p style="margin-left:200px;">13650563542</p> </div>
+            <div><p style="float:left;">联系人：胡晓英</p> <p style="margin-left:200px;">胡小兰</p> </div>
         </div>
+    </div>
+    <div id="printBaoBiao">
     </div>
 </div>
 
-<div class="">
-    <div id="printBaoBiao">
-        <table id="printBaoBiaoTable" border="1" style="width:100%;font-size:20px;font-family:'宋体';">
-            <tbody id="printBaoBiaoBody">
-                <tr style="border-bottom: none;">
-                    <th colspan="4">
-                        <p style="text-align:center;font-size:24px;font-family:'微软雅黑'">重庆品佳调味</p>
-                    </th>
-                </tr>
-                <tr style="height:20px;">
-                    <th colspan="4"></th>
-                </tr>
-                <tr>
-                    <th colspan="4" id="printCustomerNameBaoBiao">购货单位:</th>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+
 @*//2.2.4版本jq*@
 <script src="~/Scripts/jquery.js"></script>
 <script src="~/Scripts/bootstrap.js"></script>
@@ -375,40 +362,19 @@
             cols: [[
                 { title: '序号', type: 'numbers', width: 49 },
                 {
-                    field: 'name', title: '商品名', width: 250, templet: function (d) {
+                    field: 'name', title: '商品名', width: 218, templet: function (d) {
                         var options = viewObj.renderSelectOptions(viewObj.typeData, { valueField: "id", textField: "name", selectedValue: d.name });
                         return '<a lay-event="name"></a><select name="name" lay-filter="name" lay-search><option value="">请选择分类</option>' + options + '</select>';
                     }
                 },
-                { field: 'price', name: 'price', event: 'price', title: '单价', edit: 'text', width: 50 },
-                //{
-                //    field: 'price', title: '价格', width: 100, templet: function (d) {
-                //        //var options = viewObj.renderSelectOptions(viewObj.typeData, { valueField: "id", textField: "name", selectedValue: d.name });
-                //        return '<div data-edit="text"><div lay-event="price" name="price" ></div></div>';
-                //    }
-                //},
-                //{
-                //    field: 'price', title: '价格', event: 'price', templet: function (d) {
-                //        var html = ['<input type="checkbox" name="state" lay-skin="switch" lay-text="是|否"'];
-                //        html.push(d.state > 0 ? ' checked' : '');
-                //        html.push('/>');
-                //        return html.join('');
-                //    }
-                //},
-                { field: 'count', title: '数量', edit: 'text', event: 'count', width: 40 },
-                //{
-                //    field: 'count', title: '数量', event:'count' , templet: function (d) {
-                //        var html = ['<input type="text" name="count"'];
-                //        html.push('/>');
-                //        return html.join('');
-                //    }
-                //},
-                { field: 'singleTotalPrice', title: '总价', edit: 'text', width: 80 },
+                { field: 'price', name: 'price', event: 'price', title: '单价', edit: 'text', width: 60 },
+                { field: 'count', title: '数量', edit: 'text', event: 'count', width: 60 },
+                { field: 'singleTotalPrice', title: '总价', edit: 'text', event: 'singleTotalPrice', width: 80 },
                 { field: 'mark', title: '备注', edit: 'text', width: 130 },
                 {
                     field: 'tempId', title: '操作', templet: function (d) {
                         return '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del" lay-id="' + d.tempId + '"><i class="layui-icon layui-icon-delete"></i>移除</a>';
-                    }, width: 88
+                    }, width: 80
                 }
             ]],
             done: function (res, curr, count) {
@@ -498,8 +464,8 @@
             //保存到数据库
             save: function () {
                 console.log("save jq v" + $.fn.jquery);
-                
-               // $('#orderAddModal').modal('hide');
+
+                // $('#orderAddModal').modal('hide');
                 var oldData = table.cache[layTableId];
                 for (var i = 0, row; i < oldData.length; i++) {
                     row = oldData[i];
@@ -523,8 +489,6 @@
                 console.log("sainfo json v" + $.fn.jquery);
                 console.log("sainfo json v1" + $q.fn.jquery);
                 console.log("sainfo json v2" + $z.fn.jquery);
-
-                //console.log("sainfo json v2" + $q.fn.jquery);
                 $.ajax({
                     type: "post",
                     contentType: "application/json;utf-8",
@@ -539,6 +503,7 @@
                             alert("添加成功！");
                             //$('#orderAddModal').modal('hide');
                             //loadTableData();
+                            window.location.href = "/Order/OrderManage?menucode_str=1021";
                         }
                         else {
                             if (result.Entity != "" && result.Entity != null)
@@ -553,7 +518,12 @@
                         loadTableData();
                     }
                 });
-                // document.getElementById("jsonResult").innerHTML = JSON.stringify(table.cache[layTableId], null, 2);	//使用JSON.stringify() 格式化输出JSON字符串
+                $('#orderAddModal').modal('hide');
+                //$.notify({
+                //    message: '<i class="fa fa-check"></i> ' + result.Message,
+                //    status: "success",
+                //    pos: "bottom-right"
+                //});
             }
         }
 
@@ -572,28 +542,19 @@
             activeByType(type);
         });
 
+        //$('.layui-btn[data-type]').on('click', function () {
+        //    var type = $(this).data('singleTotalPrice');
+        //    activeByType(type);
+        //});
         $('.layui-btn[data-type]').on('input', function () {
             var type = $(this).data('count');
             activeByType(type);
         });
-
         //监听select下拉选中事件
         form.on('select(name)', function (data) {
             var elem = data.elem; //得到select原始DOM对象
             //var elemParentAllChild = elem.parentNode.parentNode.parentNode.childNodes;//获取当前行的所有td
             $(elem).prev("a[lay-event='name']").trigger("click");
-
-            //取出
-            //var commoditySingle = "";
-            //$.ajax({
-            //    url: "/Commodity/SingleCommodity/"+data.value,
-            //    async: true,
-            //    success: function (result) {
-            //        commoditySingle = eval('(' + result + ')');
-            //        elemParentAllChild[2].childNodes[0].innerHTML = commoditySingle.price;//设置价格
-            //        //priceUpdate =  commoditySingle.price; //给全局变量价格赋值
-            //    }
-            //});
         });
 
         //监听工具条
@@ -627,12 +588,29 @@
                         });
                     }
                     break;
+                case "singleTotalPrice":
+                    var stateVal = tr.find("input[name='price']");
+                    select2 = tr.find("td");// tr中的td对象集合
+                    console.log("singleTotalPrice");
+                    console.log(select2[2].childNodes[0].innerHTML);
+                    console.log(select2[3].childNodes[0].innerHTML);
+                    console.log(select2[4].childNodes[0]);
+                    select2[4].childNodes[0].innerHTML = (select2[2].childNodes[0].innerHTML * select2[3].childNodes[0].innerHTML).toFixed(2);//将单价乘以数量得到单行总价
+                    $.extend(obj.data, { 'singleTotalPrice': select2[4].childNodes[0].innerHTML })
+                    console.log(obj.data);
+                    activeByType('updateRow', obj.data);	//更新行记录对象
+                    break;
                 case "count":
                     var stateVal = tr.find("input[name='price']");
                     select2 = tr.find("td");// tr中的td对象集合
+                    console.log("count");
+                    console.log(select2[2].childNodes[0].innerHTML);
+                    console.log(select2[3].childNodes[0].innerHTML);
+                    console.log(select2[4].childNodes[0]);
+                    console.log(obj.data);
                     select2[4].childNodes[0].innerHTML = (select2[2].childNodes[0].innerHTML * select2[3].childNodes[0].innerHTML).toFixed(2);//将单价乘以数量得到单行总价
                     $.extend(obj.data, { 'singleTotalPrice': select2[4].childNodes[0].innerHTML })
-                    activeByType('updateRow', obj.data);	//更新行记录对象
+                    //activeByType('updateRow', obj.data);	//更新行记录对象
                     break;
                 case "state":
                     var stateVal = tr.find("input[name='state']").prop('checked') ? 1 : 0;
